@@ -1,4 +1,4 @@
-(C) Réalisation d'un PoC de déverrouillage de porte serrure connecté en domotique
+Réalisation d'un PoC de déverrouillage de porte serrure connecté en domotique
 L'objectif de ce projet est de réaliser une preuve de concept (PoC) sur le déverrouillage des systèmes de portes/serrures connectés que l'on pourrait trouver dans des systèmes domotiques.
 Attention ce sujet a pour but de faire des démonstrations de sensibilisation!
 

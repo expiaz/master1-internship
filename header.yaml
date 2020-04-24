@@ -1,9 +1,10 @@
 ---
-title: "Jisipo"
+title: "PoC déverrouillage de serrure connectée via HackRF"
 subtitle: "Stage Master 1"
+author: "Gidon Rémi"
 date: "Promotion 2019-2020"
 institute: "Université Bretagne Sud"
-diploma: "Master 1 Ingénierie Systèmes Complexes"
+diploma: "Master 1 Ingénierie de Systèmes Complexes"
 speciality: "Spécialité Cybersécurité des Systèmes Embarqués"
 logo: "img/ubs.png"
 toc: true
