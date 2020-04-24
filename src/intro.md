@@ -4,7 +4,7 @@ Definition serrure connectee
 
 Mecanisme ouverture/fermeture electronique embarquant un ordinateur permettant de le controler a distance. La plupart de ces mecanismes sont adaptables sur des serrures dites normales, prenant le controle du verrou.
 
-Une serrure est dites connectee lorsqu'elle communique avec un autre systeme informatique. Vvia le smartphone d'un utilisateur pour echanger des ordres mais aussi avec un serveur du constructeur.
+Une serrure est dites connectee lorsqu'elle communique avec un autre systeme informatique. Via le smartphone d'un utilisateur pour echanger des ordres mais aussi avec un serveur du constructeur.
 
 Il existe differente architecture utilisant des topologies reseau distinctes. La plus simple et courante est une architecture dite TODO: la serrure ne communique qu'avec le smartphone en BLE via une app. Cette meme app permet a la serrure de comm avec le serveur par l'intermediaire du smartphone (BLE -> app -> wifi -> server).
 Une autre approche est d'integrer les capacites wifi a la serrure, qui sera autonome et directement connectee au serveur ainsi qu'a l'utilisateur via BLE. Ainsi la serrure transmet et recois ces ordres de facon autonome. Avec une politique de regles sur les actions pouvant etres effectuees localement, une indisponibilite du serveur ne bloquerait pas totalement l'utilisation de la serrure car pouvant communiquer directement avec le smartphone en BLE sans le serveur.

@@ -5,4 +5,4 @@
 *Date*: 13 Avril - Juin 2020 (10 semaines)  
 *Université*: Bretagne Sud  
 *Diplôme préparé*: Master 1 Ingénierie de Systèmes Complexes  
-*Spécialité*: Spécialité Cybersécurité des Systèmes Embarqués  
+*Spécialité*: Cybersécurité des Systèmes Embarqués  
