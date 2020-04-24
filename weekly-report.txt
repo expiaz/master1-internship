@@ -1,0 +1,21 @@
+# Rapports hebdomadaires de Rémi Gidon
+
+## Semaine 1 - 13/04
+
+Done
+* Étude du marché des "smart locks"
+* Étude des technologies utilisées pour l'identification / ouverture automatique (BLE/NFC)
+
+Doing
+* Étude du BLE (phase 2 principalement) voir NFC
+* Étude de l'historique des attaques perpétuées sur les "smart locks"
+* Plusieurs attaques sont identifiées, je ne retiens que les attaques par "replay" ou "eavesdropping" pour mon sujet (HackRF) car le reste ce concentre sur les communications client-serveur (API, APK) faites via d'autres support (WiFi, ethernet).
+
+Todo
+* Étude implementation BLE smart lock / app smartphone (android?ios?)
+* Étude des possibilités d'attaque replay simple (save & replay) ou plus complexe (broadcast / spoofing) sur le BLE ou NFC
+* Étude de la carte HackRF
+
+Sources:
+https://people.eecs.berkeley.edu/~daw/papers/locks-asiaccs16.pdf
+https://courses.csail.mit.edu/6.857/2017/project/3.pdf
