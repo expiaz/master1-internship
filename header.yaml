@@ -1,13 +1,16 @@
 ---
-title: "PoC déverrouillage de serrure connectée via HackRF"
+title: "Étude de système domotique: serrure connectée"
 subtitle: "Stage Master 1"
 author: "Gidon Rémi"
-date: "Promotion 2019-2020"
+date: "Avril/Juin 2020"
 institute: "Université Bretagne Sud"
 diploma: "Master 1 Ingénierie de Systèmes Complexes"
+year: "Promotion 2019-2020"
 speciality: "Spécialité Cybersécurité des Systèmes Embarqués"
 logo: "img/ubs.png"
 toc: true
 lof: true
 lot: true
+babel-otherlangs: [english]
+babel-lang: french
 ---

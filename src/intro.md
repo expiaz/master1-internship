@@ -1,3 +1,10 @@
+# Abstract
+
+Le but est d'étudier l'architecture des systèmes domotiques sous l'angle de la sécurité pour essayer de les compromettres. Le projet vise en particulier les serrures connectées (ou *smart lock*) faisant partie d'un réseau domotique et leur éventuel déverouillage à distance.
+
+Une étude de marché de ces systèmes révèle différentes architecture suivant le besoin et l'intégration voulue ainsi qu'une variété de canaux de communications plus ou moins adaptés.  
+
+
 # Introduction
 
 Definition serrure connectee

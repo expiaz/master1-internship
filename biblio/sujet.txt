@@ -12,3 +12,8 @@ s'interfacer avec une carte HackRF
 Livrables:
 Étude des solutions existantes
 PoC sur un système identifié
+
+MaJ 05/2020
+
+Etude BLE dans la domotique (etat de l'art du marché et attaques)
+PoC identification appareils / localisation / tracking

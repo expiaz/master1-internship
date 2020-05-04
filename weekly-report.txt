@@ -19,3 +19,40 @@ Todo
 Sources:
 https://people.eecs.berkeley.edu/~daw/papers/locks-asiaccs16.pdf
 https://courses.csail.mit.edu/6.857/2017/project/3.pdf
+https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-11.html
+
+## Semaine 2 - 20/04
+
+Done
+* Setup LaTeX / Pandoc local + template rapport
+
+Doing
+* Étude de la carte HackRF
+* Rédaction introduction
+
+Todo
+* Étude du BLE
+* Attaques sur le BLE
+
+Sources:
+https://pandoc.org/
+https://github.com/Wandmalfarbe/pandoc-latex-template
+https://gitlab.com/hackrf/hackrf-domotique/
+
+## Semaine 3 - 27/04
+
+Étude de faisabilité sur les serrures connectées vulnérables sans matériel dédié (ou un minimum).  
+Il existe plusieurs serrures connectées en BLE (directement au smartphone pour la plupart) vulnérables à des attaques par relay / replay et fuzzing (error state abuse).  
+Ces vulnérabilités ont étés reportées aux fabriquants en 2016 lors de la DEFCON 24. Les vulnérabilités ont depuis étés corrigées ou le produit retiré du marché.  
+Ces attaques demandent toutes d'utiliser un périphérique externe (USB) permettant d'écouter passivement le traffic externe à l'ordinateur (la puce bluetooth ne permettant que d'écouter le traffic interne du PC).  
+Cependant, le code utilisé et la proceéédure étant disponible en ligne, il est théoriquement possible de reproduire ces attaques après s'être procuré l'un des systèmes vulnérable.
+
+Concernant le protocole BLE en lui même, la phase d'appairage n'est plus vulnérable à l'écoute passive depuis la version 4.2 (utilisation de Diffie Hellman ECC), mais encore aux man-in-the-middle car celui-ci ne garantie par forcément l'authenticité des informations (erreur de configuration possible).
+
+Sources:
+https://github.com/asjoyner/defcon24/blob/master/slides/DEFCON-24-Rose-Ramsey-Picking-Bluetooth-Low-Energy-Locks.pdf
+https://www.kth.se/polopoly_fs/1.914054.1561620889!/Examensarbete%20Final.pdf
+BLE security:
+https://www.digikey.com/eewiki/display/Wireless/A+Basic+Introduction+to+BLE+Security
+http://docplayer.net/182588053-Securing-bluetooth-low-energy-locks-from-unauthorizedaccess-and-surveillance.html
+https://www.usenix.org/system/files/conference/woot13/woot13-ryan.pdf
