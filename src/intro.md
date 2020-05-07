@@ -1,49 +1,71 @@
-# Abstract
+Le but est d'étudier l'architecture des systèmes domotiques sous l'angle de la sécurité pour chercher des possibles fuites d'informations ou compromossions possible.  
+L'état de l'art révèle différentes architecture suivant le besoin et l'intégration voulue ainsi qu'une variété de canaux de communications plus ou moins adaptés.  
+Je me focaliserait sur les architecture contenant un *hub* domotique reliant tout les appareils ainsi que le protocole de communication `Bluetooth` en mode `Low Energy` (`BLE`).  
+Après étude de l'historique des attaques perpétuées sur le `BLE` et les objets domotique (connectés), je me consacrerait à la réalisation d'une preuve de concept sur des appareils `BLE`.
 
-Le but est d'étudier l'architecture des systèmes domotiques sous l'angle de la sécurité pour essayer de les compromettres. Le projet vise en particulier les serrures connectées (ou *smart lock*) faisant partie d'un réseau domotique et leur éventuel déverouillage à distance.
+# Domotique
 
-Une étude de marché de ces systèmes révèle différentes architecture suivant le besoin et l'intégration voulue ainsi qu'une variété de canaux de communications plus ou moins adaptés.  
+Avec l'explosion de l'internet de objets (TODO chiffres) la domotique est devenue accessible et s'est popularisée à travers les objets connectés. Ceux-ci étendent leur équivalent mecanique en integrant des composants electroniques, permettant le controle a distance par exemple.  
+Ces ameliorations engendrent une augmentation de la surface d'attaque car leur modèle de menace doit intégrer non seulement leur fontion primaire (serrure, lampe, ...) mais également les systèmes informatiques utilisé.  
 
+Comme dans beaucoup de secteurs industriels, la sécurité n'est pas la priorité des fabriquants d'objets connectés. 
+Ces appareils gerent des donnees utilisateur (personnelles) et leur utilisation pe critique (serrure, voiture).
+Devices peu cher generalement, bcp market/hype (voir ces), securite sous cote (mm si mtn c gage qualite) car fct avant tout.
 
-# Introduction
+Les 
 
-Definition serrure connectee
-
-Mecanisme ouverture/fermeture electronique embarquant un ordinateur permettant de le controler a distance. La plupart de ces mecanismes sont adaptables sur des serrures dites normales, prenant le controle du verrou.
-
-Une serrure est dites connectee lorsqu'elle communique avec un autre systeme informatique. Via le smartphone d'un utilisateur pour echanger des ordres mais aussi avec un serveur du constructeur.
-
-Il existe differente architecture utilisant des topologies reseau distinctes. La plus simple et courante est une architecture dite TODO: la serrure ne communique qu'avec le smartphone en BLE via une app. Cette meme app permet a la serrure de comm avec le serveur par l'intermediaire du smartphone (BLE -> app -> wifi -> server).
-Une autre approche est d'integrer les capacites wifi a la serrure, qui sera autonome et directement connectee au serveur ainsi qu'a l'utilisateur via BLE. Ainsi la serrure transmet et recois ces ordres de facon autonome. Avec une politique de regles sur les actions pouvant etres effectuees localement, une indisponibilite du serveur ne bloquerait pas totalement l'utilisation de la serrure car pouvant communiquer directement avec le smartphone en BLE sans le serveur.
-
-Meme si d'autres protocoles peuvent etres utilises, toutes les serrures connectees du marche utilisent ajd le BLE car compatible avec tout les smartphones. Le NFC est envisageable (notamment comme canal pour la mise en place du BLE) mais son champ d'application est trop reduit avec ces 10cm. Le BLE emet jusqu'a 10m, permettant de faciliter l'ouverture/fermeture de la porte sans action utilisateur.
-
-Fonctionnement, unlock automatique lorsque dans le range via BLE, unlock distance via WiFi.
-
-Si le service ne fonctionne plus, le smartphone decharge ou indisponible ou tout autre disfonctionnement ,toutes les serrures embarques un ou plusieurs mecanismes tierces pour ouvrir.
-On peut citer la clef traditionnelle qui peut continuer d'etre utilisee, mais aussi un pad avec pin 6 chiffres, une telecommande comme pour les voitures.
-Aucune serrure connectee ne propose de moyen biometriques ou badge RFID car ceux-ci font partis d'une autre gamme s'addressant plutot au domaine professionnel pour securiser des entrees ou entrepots.
+Ces ameliorations engendrent une augmentation de la surface d'attaque car ces *objets intelligents* (ou connectés) doivent résoudre les mêmes challenge que ceux des systèmes informatiques traditionnels en plus de leur fonction primaire.  
+Ces ameliorations engendrent une augmentation de la surface d'attaque de par l'integration et la communication entre systemes informatiques.
+explosion IoT, democratisation domotique, connexion de differents appareils (alexa, smartphone ,sensor, smart things).
+Securite souvent sous estimee, protocoles non adaptes et solution mal implementee / configuree
 
 # Architecture
 
-diff buts ?
+Qu'est ce qu'un objet connecte en domotique ?
+Sensor (termometre)
 
-les diff technologies utilisees comme clef
 
-technologies recover
+Architecture reseau domotique
+- simple: appareil non relie au reseau, dependant gateway utilisateur, remplissant une fonction d'augmentation seul (smart lock)
+- avancee: appareil s'appuyant sur un reseau domotique pour realiser ses fonctions, relie a une gateway "sure" hub
 
 ## Protocoles
 
-BLE / NFC / WiFi
+Protocoles generaux supportes par tout appareil (smartphone notamment) et peu cher
+WiFi
+BLE
+NFC
 
-## Topologie
+Protocoles specifiques concus pour ces reseaux
+Zigbee
+Zwave
 
-topologies et implications
+# BLE
 
 # Attaques
 
-## Replay
+Types d'attaques et appareils concernes (voir sources)
+Evolution du BLE (appairages) et attaques (replay, eavesdropping, mitm)
 
-# HackRF
+## Types
+
+- Eavesdropping
+- MITM
+
+## Ressources
+
+### Materiel
+
+### Logiciels
 
 # Poc
+
+ecoute passive
+
+## Identification
+
+## Localisation
+
+
+
+## Obtention secrets

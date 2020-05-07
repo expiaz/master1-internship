@@ -1,0 +1,3 @@
+[submodule "poc/mirage"]
+	path = poc/mirage
+	url = git://redmine.laas.fr/laas/mirage.git
