@@ -1,6 +1,6 @@
 # Projet stage M1 CSSE
 
-*Sujet*: PoC déverrouillage de serrure connectée via HackRF  
+*Sujet*: PoC attaques BLE  
 *Réalisé par*: Gidon Rémi  
 *Date*: 13 Avril - Juin 2020 (10 semaines)  
 *Université*: Bretagne Sud  

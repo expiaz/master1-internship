@@ -56,3 +56,32 @@ BLE security:
 https://www.digikey.com/eewiki/display/Wireless/A+Basic+Introduction+to+BLE+Security
 http://docplayer.net/182588053-Securing-bluetooth-low-energy-locks-from-unauthorizedaccess-and-surveillance.html
 https://www.usenix.org/system/files/conference/woot13/woot13-ryan.pdf
+
+# Semaine 4 - 3/04
+
+Mon sujet se précise sur le protocole BLE et l'internet des objets plutot que les communications et architectures domotique en général.  
+
+Après études des solutions existantes pour l'audit et l'attaque de ce protocole, j'ai choisit Mirage. C'est un framework qui combine plusieurs librairies BLE existantes (C et python) et s'interface avec différents appareils. Il est facilement modifiable pour étendre ces fonctionnalités en fonction de mes besoins.  
+
+De base Mirage fournis plusieurs modules pour réaliser des tâches allant de l'interfacage avec un peripherique bluetooth jusqu'a la recuperation et/ou modification à la volée de paquets BLE (via MiTM).  
+Côté matériel, j'ai d'abors regarder les périphériques compatibles avec Mirage et mon sujet.  
+Chaque périphérique permet des fontions plus ou moins avancées (selon la complexité du périphérique et donc son prix).  
+Mon besoin étant:
+- inventaire des périphérique bluetooth alentour
+- collecte d'informations (sensibles)
+- localisation des périphériques bluetooth alentour 
+(+ brouillage / interception communication)
+J'ai choisit en conséquence des appareils adaptés:
+- 2 dongle BLE HCI standard pour l'inventaire et la collecte d'information (MiTM)
+- 1 carte de développement BLE permettant l'écoute passive (sniffing) et le brouillage / jamming de connexions
+Je me suis assuré qu'ils soient compatibles avec Mirage.  
+
+Enfin, Mirage ne permet pas la localisation des appareils via BLE, mais le framework étant extensible, je compte l'implémenter par moi même.  
+N'importe quel appareil du matériel precedemment enoncé permet la localisation via RSS (puissance du signal reçu). Cette méthode ne nous donne qu'un cercle approximatif sur lequel l'appareil peut se trouver. Pour préciser la localisation il faut ajouter une autre source d'information comme l'angle d'arrivée de la transmission (demande du matériel supplémentaire ainsi que le support BLE 5.1) ou 2 autres points de donnée pour permettre la trilatération. Même en utilisant ces méthodes, le resultat reste approximatif et il est necessaire de croiser plusieurs méthodes ou modèles pour améliorer la précision (dead-reckoning, path-loss, least mean square ... avec filtre kalmann).
+
+Sources:
+https://hal.archives-ouvertes.fr/hal-02268774/file/SSTIC2019-Article-mirage_un_framework_offensif_pour_laudit_du_bluetooth_low_energy-alata_auriol_roux_cayre_nicomette.pdf
+
+IPS localisation:
+https://3pl46c46ctx02p7rzdsvsg21-wpengine.netdna-ssl.com/wp-content/uploads/2019/03/1901_Enhancing-Bluetooth-Location-Service_FINAL.pdf
+https://iotandelectronics.wordpress.com/2016/10/07/how-to-calculate-distance-from-the-rssi-value-of-the-ble-beacon/

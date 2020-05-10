@@ -84,53 +84,61 @@ Pour résumer:
 
 ## Localization
 
+### Fingerprinting
+
+A partir d'une liste de beacons et leurs position, calcul la position se rapprochant le plus d'un des beacons (a partir du RSSI).
+
+Demande de pouvoir etablir la liste des beacons et les identifies de facon sure. Si le systeme est mit en place pour cet effet on s'assurera qu'ils soient identifiables (MAC unique par exemple) mais dans notre cas de recuperation d'information, les appareils peuvent mettre en place des mesures contre le tracage comme la generation d'adresse mac aleatoire.
+Il est possible d'utiliser le profile GATT pour identifier un appareil, combiner avec le RSSI dans le temps et les deplacements (capteurs) on peut esperer distinguer deux profils GATT identiques.
+
+~ beacons coverage
+
+Le beacon le plus proche
+
+### RSSI / TOA
+
+~ m
+
+Trilateration determines the position of an object
+by understanding its distance from three known
+reference points. In the case of Bluetooth, locators
+estimate their distance to any given asset tag based
+on the received signal strength from the tag
+
+### AOA / AOD
+
+~ cm
+
+Basee sur le nouveau systeme d'angle du BLE 5.1
+Demande du materiel en plus (Multiple antennes directionnelles pour former une matrice)
+Differentes facon de calculee (angle arrivee, angle depart ...)
+
+https://www.bluetooth.com/blog/bluetooth-positioning-systems/
+https://www.bluetooth.com/bluetooth-resources/enhancing-bluetooth-location-services-with-direction-finding/?utm_campaign=location-services&utm_source=internal&utm_medium=blog&utm_content=bluetooth-positioning-systems
+
+
+### Ajouter de la precision
+
+Fusionner les resultats avec un filtre kalmann:
+- dead reckoning
+- trilateration / triangulation
+
+Ou RSS (range) + AOA (direction)
+
+### RSS
+
+1. Scan devices
+   BTLEJack sniffer
+2. find settings (rssi, txPower / measured power ...)
+   Tx Power service 0x1804 and Tx Power Level Characteristic 0x2A07
+3. calculate distance (in a circle around you)
+   10 ^ ((txPower – RSSI)/(10 * N))
+   N = loss factor (between 2 and 4), 0 for optimal conditions
+4. cross multiple references to determine a position (trilateration)
+   repeat 3 times to 3 devices
+   get OUR position
+
+### AOA
+
 ## MITM
-
-HCI dont au moins 1 reprogrammable @BD, capa necessaires:
-```python
-# mirage/modules/ble_mitm.py:14
-def checkCapabilities(self):
-    a2scap = self.a2sEmitter.hasCapabilities("COMMUNICATING_AS_MASTER","INITIATING_CONNECTION","SCANNING")
-    a2mcap = self.a2mEmitter.hasCapabilities("COMMUNICATING_AS_SLAVE","RECEIVING_CONNECTION","ADVERTISING")
-    return a2scap and a2mcap
-```
-
-HCI Capa:
-```python
-# mirage/libs/ble.py:125
-self.capabilities = ["SCANNING", "ADVERTISING", "INITIATING_CONNECTION", "RECEIVING_CONNECTION", "COMMUNICATING_AS_MASTER", "COMMUNICATING_AS_SLAVE"]
-```
-
-BTLEJack capa:
-```python
-# mirage/libs/ble_utils/bltejack.py:1156
-self.capabilities = ["SNIFFING_EXISTING_CONNECTION", "SNIFFING_NEW_CONNECTION", "HIJACKING_CONNECTIONS", "JAMMING_CONNECTIONS", "COMMUNICATING_AS_MASTER"]
-```
-
-BTLEJack n'a ni les capa necessaires pour run en slave ni en master (seul `COMMUNICATING_AS_MASTER`), de plus il aurait fallut qu'il run en master (a2scap) car le slave (a2mcap) doit pouvoir changer son @BD et seul les device HCI peuvent (implem dans `BtHCIDevice` dont herite `BLEHCIDevice`)
-```python
-# mirage/libs/bt.py:405
-def isAddressChangeable(bool):
-    return self._getManufacturerId() in COMPATIBLE_VENDORS
-```
-
-Il est necessaire de verifier que le dongle HCI procuré est compatible avec Mirage. Pour cela il faut trouver la liste des constructeurs compatibles et choisir un dongle parmit eux.
-La liste des constructeurs est disponible sur le site officiel de BLuetooth (https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/)
-```python
-# mirage/libs/bt_utils/scapy_vendor_specific.py
-'''
-0: Ericsson Technology Licensing
-10: Qualcomm Technologies International, Ltd. (QTIL)
-13: Texas Instruments Inc.
-15: Broadcom Corporation
-18: Zeevo, Inc.
-48: ST Microelectronics
-57: Integrated System Solution Corp.
-'''
-COMPATIBLE_VENDORS = [0,10,13,15,18,48,57]
-```
-Le choix se porte donc sur un CSR8510 de Qualcomm (dongle tres populaire pour ce genre d'outils et utilisé dans GATTAcker) https://www.qualcomm.com/products/csr8510 vendu par Adafruit (https://www.adafruit.com/product/1327)
-
-From https://github.com/securing/gattacker/wiki/FAQ
-> The most popular, CSR 8510-based USB dongle is available for about $10, and is confirmed with stable MAC address changing using the Bluez bdaddr tool.
 
