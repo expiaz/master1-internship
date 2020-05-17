@@ -57,7 +57,7 @@ https://www.digikey.com/eewiki/display/Wireless/A+Basic+Introduction+to+BLE+Secu
 http://docplayer.net/182588053-Securing-bluetooth-low-energy-locks-from-unauthorizedaccess-and-surveillance.html
 https://www.usenix.org/system/files/conference/woot13/woot13-ryan.pdf
 
-# Semaine 4 - 3/04
+# Semaine 4 - 4/05
 
 Mon sujet se précise sur le protocole BLE et l'internet des objets plutot que les communications et architectures domotique en général.  
 
@@ -85,3 +85,17 @@ https://hal.archives-ouvertes.fr/hal-02268774/file/SSTIC2019-Article-mirage_un_f
 IPS localisation:
 https://3pl46c46ctx02p7rzdsvsg21-wpengine.netdna-ssl.com/wp-content/uploads/2019/03/1901_Enhancing-Bluetooth-Location-Service_FINAL.pdf
 https://iotandelectronics.wordpress.com/2016/10/07/how-to-calculate-distance-from-the-rssi-value-of-the-ble-beacon/
+
+# Semaine 5 - 11/05
+
+Rédaction structure du rapport:
+- contexte objets connectes / domotique
+- marché Bt/BLE
+- protocole Bt/BLE
+- attaques et outils existants sur le protocole
+- choix technique logiciel et materiel (mirage & dongles)
+
+Setup Docker (sur Mac)
+Setup VM (paravirtualisee) pour test Mirage
+Setup matériel pour mirage (custom firmware microbit)
+Tests du matériel avec Mirage (dongle HCI / microbit)
