@@ -1,7 +1,8 @@
 src/header.yaml
 src/intro.md
-src/soa_ble.md
 src/ble.md
-src/soa_hack.md
+src/market.md
+src/attacks.md
+src/tools.md
 src/mirage.md
 src/poc.md
