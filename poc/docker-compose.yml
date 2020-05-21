@@ -1,8 +1,13 @@
 version: "3.8"
 services:
-  poc:
+  mirage:
+    container_name: mirage-prod
+    image: mirage/prod
+    privileged: true
     build: .
+    network_mode: host
     ports:
         - "3000:80"
+    tty: true
     volumes:
-        - ./mirage/mirage/scenarios:/poc/mirage/mirage/scenarios
+        - /dev:/dev

@@ -1,14 +1,13 @@
-FROM Ubuntu:18.04
+FROM ubuntu:18.04
 
-RUN apt update && \
-    apt install -y python3 python3-venv python3-pip
+RUN apt-get update
+RUN apt-get install -y bluez bluetooth usbutils
+RUN apt-get install -y python3 python3-venv python3-pip
 
-WORKDIR /poc/mirage
-#EXPOSE 80
+WORKDIR /poc
+EXPOSE 80
 
-# Use the previously downloaded mirage git repo for install only
-COPY mirage .
-RUN python3 setup.py install
+RUN git clone git://redmine.laas.fr/laas/mirage.git
+RUN cd mirage && python3 setup.py install
 
-# we will use mountpoints from now on
-RUN rm -rf mirage/scenarios
+#CMD ["./mirage_launcher", "ble_info"]

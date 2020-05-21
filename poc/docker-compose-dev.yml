@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  mirage:
+    container_name: mirage-dev
+    image: mirage/dev
+    privileged: true
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    network_mode: host
+    ports:
+        - "3000:80"
+    tty: true
+    volumes:
+        - ./shared:/poc/shared
+        - /dev:/dev
+        - ./mirage:/poc/mirage
+        - ./btlejack:/poc/btlejack

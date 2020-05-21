@@ -50,10 +50,12 @@ Architecture reseau domotique
 ## Protocoles
 
 Protocoles generaux supportes par tout appareil (smartphone notamment) et peu cher
-WiFi
-BLE
+WiFi (WLAN) ~ Local = remplace cables pour appareils fixes dans pieces / appart
+BLE (WPAN) ~ Personnal = remplace cables pour appareils portable personnels
 NFC
 
 Protocoles specifiques concus pour ces reseaux
 Zigbee
 Zwave
+Thread
+ANT(+)

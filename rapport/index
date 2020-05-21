@@ -5,4 +5,5 @@ src/market.md
 src/attacks.md
 src/tools.md
 src/mirage.md
-src/poc.md
+src/poc/spec.md
+src/poc/
