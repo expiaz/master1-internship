@@ -1,10 +1,4 @@
-# Bluetooth
-
-1.0
-
-2.0
-
-3.0
+# Bluetooth Low energy
 
 multi bande
 master - slave
@@ -58,7 +52,7 @@ A descriptor provides additional information about a characteristic. For instanc
 
 fonctionnement apparaige (phases)
 
-# BLE
+## BLE
 
 specification du Bt pour les systemes embarques, bcp utilise dans objets connectes
 

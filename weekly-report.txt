@@ -99,3 +99,12 @@ Setup Docker (sur Mac)
 Setup VM (paravirtualisee) pour test Mirage
 Setup matériel pour mirage (custom firmware microbit)
 Tests du matériel avec Mirage (dongle HCI / microbit)
+
+# Semaine 6 - 18/05
+
+Mise en place des modules intégrant la plupart des fonctionnalités du PoC via CLI Mirage pour tester leurs fonctionnement et comptabilité.
+Tests de redondance avec BTLEJack (Mirage est basé dessus) pour valider les comportements ou erreurs.
+Découverte de plusieurs problèmes et corrections de bugs dans Mirage, impossibilité de départager si l'erreur viens de Mirage ou de ma connexion BLE testée dans certains cas.
+TODO: mettre en place une connexion BLE entre 2 dongle HCI via Mirage et essayer les modules offensifs dessus (trouver un hub USB aussi car les macs et leurs 2 ports USB...).
+
+Rédaction des spécifications du PoC dans le rapport

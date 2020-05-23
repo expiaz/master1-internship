@@ -323,8 +323,11 @@ $endif$
 % for │ ├─┬ chars
 \usepackage{pmboxdraw}
 
-% header - footer
+% page break after chapters
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
 
+% header - footer
 \usepackage{fancyhdr}
 
 \fancypagestyle{ubs-header-footer}{
@@ -416,6 +419,7 @@ $endif$
 	  \newpage
     
     $if(toc)$
+    \setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$3$endif$}
     \tableofcontents
     $endif$
     $if(lot)$

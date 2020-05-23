@@ -10,4 +10,4 @@ EXPOSE 80
 RUN git clone git://redmine.laas.fr/laas/mirage.git
 RUN cd mirage && python3 setup.py install
 
-#CMD ["./mirage_launcher", "ble_info"]
+#CMD ["mirage", "ble_info"]

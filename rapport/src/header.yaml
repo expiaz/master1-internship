@@ -13,4 +13,7 @@ lof: true
 lot: true
 babel-otherlangs: [english]
 babel-lang: french
+numbersections: true
+secnumdepth: 2
+toc-depth: 2
 ---

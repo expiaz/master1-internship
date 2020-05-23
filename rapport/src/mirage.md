@@ -22,5 +22,4 @@ Pour les sniffers BTLEJack eligibles:
 Pour résumer:
 - dongle BLE (https://www.adafruit.com/product/1327 / https://www.amazon.co.uk/CSR8510-Bluetooth-Adapter-Classic-Headset/dp/B01G92CNY8)
 - carte Micro:Bit (https://microbit.org/buy/)
-# Outils
 

@@ -1,9 +1,8 @@
 src/header.yaml
 src/intro.md
 src/ble.md
-src/market.md
 src/attacks.md
 src/tools.md
 src/mirage.md
-src/poc/spec.md
-src/poc/
+src/specs.md
+src/poc.md

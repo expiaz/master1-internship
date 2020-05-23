@@ -5,6 +5,14 @@ Je me focaliserait sur les architecture contenant un *hub* domotique reliant tou
 Après étude de l'historique des attaques perpétuées sur le `BLE` et les objets domotique (connectés), je me consacrerait à la réalisation d'une preuve de concept sur des appareils `BLE`.
 -->
 
+Dans le cadre du master CSSE nous etudions l'internet des objets (IoT) et leurs aspects securite. Le Bluetooth Low Energy (BLE) est une specification du protocole Bluetooth pour les objets fonctionnant sur batterie, visant notamment les objets connectes.  
+Standardise, gratuit et integré dans la plupart des appareils de bureautique (laptop, smartphone) il est rapidement devenu populaire dans l'internet des objets.  
+<!--
+Le BLE repond aux nouvelles attentes pour l'internet des objets en etendant le Bt aux objets connectes. Le Bt a ete concus dans l'optique de creer des communications point a point WPAN (Wireless Personnal Area Network) entre des appareils de bureautique personnels (telephone, casque, ordinateur portable...).  
+-->
+La premiere iteration du BLE est principalement un portage du procole Bt vers une couche pysique "Low Energy". Celle ci integre des mesures de securite aujourd'hui desuetes et manque de fonctionnalites (topologies autres que point a point, localisation precise). Meme si le protocole a su evolue depuis pour repondre a ces besoins, beaucoup d'appareils *premiere generation* utilisent encore la version originale n'integrant pas encore ces mecanismes.  
+Ce sont pour la plupart des appareils concus pour fonctionner en point a point avec un smartphone ou ordinateur comme les montres connectés, les capteurs corporels fitness, les termometres, serrures ou cadenas, etc. Les donnees personnelles peuvent etres interceptees et les actions modifiees (ouverture de cadenas, par exemple).
+
 # Objets connectés
 
 histoire des objets connectes
@@ -38,7 +46,7 @@ Securite souvent sous estimee, protocoles non adaptes et solution mal implemente
 
 -->
 
-# Architecture
+## Architecture
 
 ## Appareil standalone / augmenté
 Architecture reseau domotique
@@ -59,3 +67,23 @@ Zigbee
 Zwave
 Thread
 ANT(+)
+
+## Marché
+
+Premiere generation point a point "smart"
+
+Seconde generation networks IoT
+
+### Bt
+
+Echange donnees
+
+### BLE
+
+Domotique
+
+Gadgets
+
+Entreprise / warehouse
+
+smart city (tracking shopping)
