@@ -12,7 +12,5 @@ services:
         - "3000:80"
     tty: true
     volumes:
-        - ./shared:/poc/shared
+        - ./poc:/poc
         - /dev:/dev
-        - ./mirage:/poc/mirage
-        - ./btlejack:/poc/btlejack

@@ -1,6 +1,6 @@
 [submodule "poc/mirage"]
-	path = poc/mirage
+	path = poc/libs/mirage
 	url = git://redmine.laas.fr/laas/mirage.git
 [submodule "poc/btlejack"]
-	path = poc/btlejack
+	path = poc/libs/btlejack
 	url = https://github.com/virtualabs/btlejack.git

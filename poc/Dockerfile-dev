@@ -14,8 +14,8 @@ EXPOSE 80
 # without having to rebuild the docker image
 
 RUN mkdir /poc && cd /poc
-COPY mirage /poc/mirage
-COPY btlejack /poc/btlejack
+COPY libs/mirage /poc/mirage
+COPY libs/btlejack /poc/btlejack
 
 RUN cd /poc/mirage && \
     python3 setup.py egg_info && \
@@ -25,4 +25,4 @@ RUN cd /poc/btlejack && \
     python3 setup.py egg_info && \
     pip3 install -r btlejack.egg-info/requires.txt
 
-RUN rm -rf /poc/mirage /poc/btlejack
+RUN rm -rf /poc

@@ -108,3 +108,4 @@ Découverte de plusieurs problèmes et corrections de bugs dans Mirage, impossib
 TODO: mettre en place une connexion BLE entre 2 dongle HCI via Mirage et essayer les modules offensifs dessus (trouver un hub USB aussi car les macs et leurs 2 ports USB...).
 
 Rédaction des spécifications du PoC dans le rapport
+Difficultés à configurer pandoc correctement avec les extensions pour reproduire la même sortie qu'avec LaTeX directement.
