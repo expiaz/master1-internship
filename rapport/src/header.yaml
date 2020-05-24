@@ -1,5 +1,5 @@
 ---
-title: "Étude de système domotique: serrure connectée"
+title: "Étude du protocole BLE"
 subtitle: "Stage Master 1"
 author: "Gidon Rémi"
 date: "Avril/Juin 2020"
@@ -8,12 +8,16 @@ diploma: "Master 1 Ingénierie de Systèmes Complexes"
 year: "Promotion 2019-2020"
 speciality: "Spécialité Cybersécurité des Systèmes Embarqués"
 logo: "img/ubs.png"
+documentclass: article
+fontsize: 11pt
+papersize: a4
 toc: true
 lof: true
 lot: true
-babel-otherlangs: [english]
-babel-lang: french
 numbersections: true
 secnumdepth: 2
 toc-depth: 2
+geometry: [margin=3.5cm]
+babel-lang: french
+babel-otherlangs: [english]
 ---

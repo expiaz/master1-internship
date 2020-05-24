@@ -10,22 +10,15 @@ Standardise, gratuit et integré dans la plupart des appareils de bureautique (l
 <!--
 Le BLE repond aux nouvelles attentes pour l'internet des objets en etendant le Bt aux objets connectes. Le Bt a ete concus dans l'optique de creer des communications point a point WPAN (Wireless Personnal Area Network) entre des appareils de bureautique personnels (telephone, casque, ordinateur portable...).  
 -->
-La premiere iteration du BLE est principalement un portage du procole Bt vers une couche pysique "Low Energy". Celle ci integre des mesures de securite aujourd'hui desuetes et manque de fonctionnalites (topologies autres que point a point, localisation precise). Meme si le protocole a su evolue depuis pour repondre a ces besoins, beaucoup d'appareils *premiere generation* utilisent encore la version originale n'integrant pas encore ces mecanismes.  
-Ce sont pour la plupart des appareils concus pour fonctionner en point a point avec un smartphone ou ordinateur comme les montres connectés, les capteurs corporels fitness, les termometres, serrures ou cadenas, etc. Les donnees personnelles peuvent etres interceptees et les actions modifiees (ouverture de cadenas, par exemple).
+La première itération du BLE est principalement un portage du procole Bluetooth vers une couche pysique *Low Energy*. Celle-ci intègre des mesures de sécurité aujourd'hui desuètes et manque de fonctionnalités (topologies autres que point à point, localisation précise). Même si le protocole à su évoluer depuis pour repondre à ces besoins, beaucoup d'appareils *première génération* utilisent encore la version originale n'intégrant pas ces mécanismes.  
+Ce sont pour la plupart des appareils conçus pour fonctionner en point à point avec un smartphone ou ordinateur comme les montres connectés, les capteurs corporels fitness, les termomètres, serrures ou cadenas, etc. Les données personnelles peuvent etres interceptées et les actions modifiées (ouverture de cadenas, par exemple).
 
 # Objets connectés
 
-histoire des objets connectes
-apparition objets intelligents (difference)
-chiffre explosion depuis quelques annees
+Avec l'explosion de l'internet de objets (TODO chiffres) toute une floppée d'objet du quotidien ont étés augmentés pour permettre la communication avec d'autres systemes informatique dont nos smartphones ou encore des serveurs distants (via notre réseau privé). Ces objets dits intelligents étendent leur équivalent mécanique en intégrant des composants éléctroniques, permettant notamment le contrôle à distance.  
+Cependant ces améliorations engendrent une augmentation de la surface d'attaque: les objets connectés sont confrontés aux mêmes challenges que ceux des systèmes informatiques traditionnels en plus de leur fonction primaire.  
 
-Apparition objets "augmentés" dits connectes (ou *smart* en anglais)
-
-Avec l'explosion de l'internet de objets (TODO chiffres) la domotique est devenue accessible et s'est popularisée à travers les objets connectés. Ceux-ci étendent leur équivalent mecanique en integrant des composants electroniques, permettant le controle a distance par exemple.  
-
-Tout une floppée d'objets du quotidien ont étés augmentés pour permettre la communication avec d'autres systemes informatique (les smartphones notamment).
-
-Cependant ces améliorations engendrent une augmentation de la surface d'attaque: les objets connectés sont confrontés aux memes challenges que ceux des systèmes informatiques traditionnels en plus de leur fonction primaire.  
+TODO securite plus en plus pris en compte mais secondaire tj
 
 <!--
 # Domotique
@@ -48,19 +41,19 @@ Securite souvent sous estimee, protocoles non adaptes et solution mal implemente
 
 ## Architecture
 
-## Appareil standalone / augmenté
+### Point à point
 Architecture reseau domotique
 - simple: appareil non relie au reseau, dependant gateway utilisateur, remplissant une fonction d'augmentation seul (smart lock)
 
-## Reseau domotique / reseau capteurs
+### Réseau
 - avancee: appareil s'appuyant sur un reseau domotique pour realiser ses fonctions, relie a une gateway "sure" hub
 
 ## Protocoles
 
 Protocoles generaux supportes par tout appareil (smartphone notamment) et peu cher
-WiFi (WLAN) ~ Local = remplace cables pour appareils fixes dans pieces / appart
-BLE (WPAN) ~ Personnal = remplace cables pour appareils portable personnels
-NFC
+WiFi (WLAN) ~50m: Local = remplace cables pour appareils fixes dans pieces / appart
+BLE (WPAN) ~10m: Personnal = remplace cables pour appareils portable personnels
+NFC 
 
 Protocoles specifiques concus pour ces reseaux
 Zigbee
@@ -74,16 +67,10 @@ Premiere generation point a point "smart"
 
 Seconde generation networks IoT
 
-### Bt
-
-Echange donnees
-
 ### BLE
 
-Domotique
+Gadgets (fitness)
 
-Gadgets
+Domotique (IoT)
 
-Entreprise / warehouse
-
-smart city (tracking shopping)
+Entreprise / warehouse / smart city (beacons)
