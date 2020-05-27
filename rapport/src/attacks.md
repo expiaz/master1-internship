@@ -1,5 +1,3 @@
-\newpage{}
-
 # Vulnerabilites
 
 COnfidentialite

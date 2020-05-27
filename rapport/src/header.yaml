@@ -8,16 +8,29 @@ diploma: "Master 1 Ingénierie de Systèmes Complexes"
 year: "Promotion 2019-2020"
 speciality: "Spécialité Cybersécurité des Systèmes Embarqués"
 logo: "img/ubs.png"
+
 documentclass: article
 fontsize: 11pt
 papersize: a4
+
 toc: true
 lof: true
 lot: true
+
+figureTitle: Figure
+tableTitle: Tableau
+listingTitle: Liste
+lofTitle: "Figures"
+lotTitle: "Tableaux"
+lolTitle: "Listes"
+
 numbersections: true
 secnumdepth: 2
 toc-depth: 2
+
 geometry: [margin=3.5cm]
 babel-lang: french
 babel-otherlangs: [english]
+
+bibliography: biblio.bib
 ---

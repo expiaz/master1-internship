@@ -1,13 +1,16 @@
 version: "3.8"
 services:
   mirage:
-    container_name: mirage-prod
-    image: mirage/prod
+    container_name: mirage
+    image: mirage
     privileged: true
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     network_mode: host
     ports:
         - "3000:80"
     tty: true
     volumes:
+        - .:/poc
         - /dev:/dev

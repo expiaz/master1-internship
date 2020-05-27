@@ -1,21 +1,12 @@
-<!--
-Le but est d'étudier l'architecture des systèmes domotiques sous l'angle de la sécurité pour chercher des possibles fuites d'informations ou compromossions possible.  
-L'état de l'art révèle différentes architecture suivant le besoin et l'intégration voulue ainsi qu'une variété de canaux de communications plus ou moins adaptés.  
-Je me focaliserait sur les architecture contenant un *hub* domotique reliant tout les appareils ainsi que le protocole de communication `Bluetooth` en mode `Low Energy` (`BLE`).  
-Après étude de l'historique des attaques perpétuées sur le `BLE` et les objets domotique (connectés), je me consacrerait à la réalisation d'une preuve de concept sur des appareils `BLE`.
--->
+Dans le cadre du master CSSE nous étudions l'internet des objets (IoT) et leurs aspects sécurité. Le protocole réseau sans fil Bluetooth Low Energy (BLE) permet une consommation réduite pour les objets fonctionnant sur batterie, visant notamment les objets connectés. Même si intégré à la spécification Bluetooth, il est incompatible avec les autres variantes de celui-ci.  
+Aujourd'hui integré dans la plupart des appareils de bureautique, il est rapidement devenu populaire dans l'internet des objets.
 
-Dans le cadre du master CSSE nous etudions l'internet des objets (IoT) et leurs aspects securite. Le Bluetooth Low Energy (BLE) est une specification du protocole Bluetooth pour les objets fonctionnant sur batterie, visant notamment les objets connectes.  
-Standardise, gratuit et integré dans la plupart des appareils de bureautique (laptop, smartphone) il est rapidement devenu populaire dans l'internet des objets.  
-<!--
-Le BLE repond aux nouvelles attentes pour l'internet des objets en etendant le Bt aux objets connectes. Le Bt a ete concus dans l'optique de creer des communications point a point WPAN (Wireless Personnal Area Network) entre des appareils de bureautique personnels (telephone, casque, ordinateur portable...).  
--->
-La première itération du BLE est principalement un portage du procole Bluetooth vers une couche pysique *Low Energy*. Celle-ci intègre des mesures de sécurité aujourd'hui desuètes et manque de fonctionnalités (topologies autres que point à point, localisation précise). Même si le protocole à su évoluer depuis pour repondre à ces besoins, beaucoup d'appareils *première génération* utilisent encore la version originale n'intégrant pas ces mécanismes.  
-Ce sont pour la plupart des appareils conçus pour fonctionner en point à point avec un smartphone ou ordinateur comme les montres connectés, les capteurs corporels fitness, les termomètres, serrures ou cadenas, etc. Les données personnelles peuvent etres interceptées et les actions modifiées (ouverture de cadenas, par exemple).
+La première itération du BLE (sortie en 2011) ne répond plus aux exigences de sécurité contemporaine et même si le protocole à su évoluer depuis pour repondre à ces besoins, beaucoup d'appareils utilisent encore la version originale n'intégrant pas ces mécanismes.  
+Ce sont pour la plupart des appareils conçus pour fonctionner sur batterie et communiquer en point à point. On va retrouver les capteurs corporels pour santé ou fitness mais également des mecanismes plus sensibles tels des cadenas ou serrures. Les communications (incluant parfois des données personnelles) peuvent êtres interceptées, voir modifiées pour réaliser une action non voulue (ouverture de cadenas).
 
 # Objets connectés
 
-Avec l'explosion de l'internet de objets (TODO chiffres) toute une floppée d'objet du quotidien ont étés augmentés pour permettre la communication avec d'autres systemes informatique dont nos smartphones ou encore des serveurs distants (via notre réseau privé). Ces objets dits intelligents étendent leur équivalent mécanique en intégrant des composants éléctroniques, permettant notamment le contrôle à distance.  
+Avec l'explosion de l'internet de objets (TODO chiffres) toute une floppée d'objet du quotidien ont étés augmentés pour permettre la communication avec d'autres systemes informatique dont nos smartphones ou encore des serveurs distants (via notre WiFi). Ces objets dits intelligents étendent leur équivalent mécanique en intégrant des composants éléctroniques, permettant notamment le contrôle à distance.  
 Cependant ces améliorations engendrent une augmentation de la surface d'attaque: les objets connectés sont confrontés aux mêmes challenges que ceux des systèmes informatiques traditionnels en plus de leur fonction primaire.  
 
 TODO securite plus en plus pris en compte mais secondaire tj

@@ -1,10 +1,10 @@
 # Spécifications
 
-Sujet: Mettre en place des attaques sur le protocole Bluetooth Low Energy (Bluetooth Smart)
+Sujet: Mettre en place des attaques sur le protocole *Bluetooth Low Energy* (Bluetooth Smart)
 
 ## Fonctionnalités
 
-La preuve de concept devra fournir plusieurs fonctionnalités offensive qui sont décritent ci-après.
+La preuve de concept devra fournir plusieurs fonctionnalités offensive décritent ci-après.
 
 <!-- TODO diagramme de controle algo ? -->
 
@@ -12,7 +12,7 @@ La preuve de concept devra fournir plusieurs fonctionnalités offensive qui sont
 
 Inventaire des appareils et connexions BLE à proximité.
 
-- Écoute des annonces sur les 3 canaux publicitaires pour récuperer les appareils émetteurs.
+- Écoute des annonces sur les 3 canaux publicitaires pour récupérer les appareils émetteurs.
 - Écoute des communications sur les 37 canaux de données pour répertorier celles active.
 
 ### Localisation
@@ -91,3 +91,4 @@ Code source du système fonctionnel: comprend l'intégration de l'outils offensi
 Documentation du système: rédigée en langage spécifique (markdown, rst) et déployable avec un outils (Sphinx, pandoc), documentation développeur pour mettre en place le système et documenter les choix techniques.
 
 Rapport de projet: rédigé avec un outils spécifique (LaTeX, pandoc), rendue au format PDF, comprend une étude du contexte, analyse de l'existant et de faisabilité puis mise en place de la preuve de concept.
+
