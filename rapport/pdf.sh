@@ -5,7 +5,7 @@ if [ "$#" -lt 1 ]; then
 	exit 1
 fi
 
-SRC_FMT="markdown_github-auto_identifiers+yaml_metadata_block+smart+implicit_figures+inline_notes"
+SRC_FMT="markdown_github+yaml_metadata_block+smart"
 OUT_FMT="pdf"
 
 OUT_FILE=$1

@@ -65,3 +65,4 @@ Gadgets (fitness)
 Domotique (IoT)
 
 Entreprise / warehouse / smart city (beacons)
+

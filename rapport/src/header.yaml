@@ -17,6 +17,7 @@ toc: true
 lof: true
 lot: true
 
+toc-title: "Sommaire"
 figureTitle: Figure
 tableTitle: Tableau
 listingTitle: Liste
@@ -28,7 +29,7 @@ numbersections: true
 secnumdepth: 2
 toc-depth: 2
 
-geometry: [margin=3.5cm]
+geometry: [margin=3cm]
 babel-lang: french
 babel-otherlangs: [english]
 

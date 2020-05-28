@@ -11,9 +11,23 @@
 git clone --recursive https://.../ble-internship.git && cd ble-internship
 
 ## Building report
-install pandoc and a latex distribution
-cd rapport && ./pdf.sh report
-open report.pdf
+
+Dependencies:
+- `pandoc`
+- `latex`
+- `pandoc-crossref`
+- `pandoc-citeproc`
+
+```bash
+# latex distribution
+brew cask install mactex
+# pandoc and pandoc filters
+brew install pandoc pandoc-crossref pandoc-citeproc
+# build paper
+cd rapport
+pandoc -d pandoc.yaml -o paper.pdf
+open paper.pdf
+```
 
 ## Building doc
 cd doc
