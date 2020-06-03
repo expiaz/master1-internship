@@ -1,5 +1,45 @@
 
-# Outils offensif
+# Analyse offensive
+
+## Composants materiel
+
+chip embarqué (+ Wireshark)
+dongle HCI
+Ubertooth
+Micro:bit (+ autres carte BTLEJack)
+SDR
+
+## Attaques
+
+### Scanning
+extraction informations
+blueZ
+bleah
+nRFConnect (proprietaire)
+
+### Spoofing
+explication
+dongle HCI
+
+### Sniffing
+explication
+Ubertooth, BTLEJack
+sniffers bluefruit, microbit, nRF51 ...
+
+### Man-In-The-Middle
+explication
+GATTAcker BTLEJuice
+pair 
+
+### Jamming
+explication
+Ubertooth BTLEJack nRF51
+
+### Hijacking
+explication
+BTLEJack
+
+
 
 ## Logiciels
 
@@ -32,7 +72,6 @@ We can BLE dedicated devices to sniff or modify it. Internal Bt chips can only a
 
 Full featured
 HackRF
-PandwaRF
 Ubertooth
 
 BLE HCI Dongle
