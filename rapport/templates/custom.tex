@@ -391,6 +391,9 @@ $endif$
 \let\originAlParaGraph\paragraph
 \renewcommand{\paragraph}[1]{\originAlParaGraph{#1} \hfill}
 
+% separate footnotes by comma
+\usepackage[multiple]{footmisc}
+
 % title
 $if(title)$
 \title{

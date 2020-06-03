@@ -9,7 +9,6 @@ output-file: out/rapport.pdf
 input-files:
 - src/market.md
 - src/ble.md
-- src/attacks.md
 - src/tools.md
 - src/mirage.md
 - src/specs.md
