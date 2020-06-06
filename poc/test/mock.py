@@ -6,6 +6,11 @@ MOCK_VALUES = {
     },
     'gap': {
         'localName': 'Test slave'
+    },
+    'control': {
+        'number_requests': 1,
+        'request_time_interval': 10,
+        'enable_pairing': True
     }
 }
 

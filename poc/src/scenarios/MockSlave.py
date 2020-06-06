@@ -7,6 +7,16 @@ class MockSlave(scenario.Scenario):
 
 	useKeyboard = False
 
+	def onStart(self):
+		# Power Level between -20 and 70 dbm
+		self.txPwLvl = MOCK_VALUES['gatt']['txPower']
+		# Local short name
+		self.shortName = MOCK_VALUES['gap']['localName']
+
+		self.addPrimaryService()
+		self.startAdv()
+		return True
+
 	def addPrimaryService(self):
 		# Tx Power Level primary service
 		self.module.server.addPrimaryService(ble.UUID(name="Tx Power").data)
@@ -49,18 +59,13 @@ class MockSlave(scenario.Scenario):
 		self.module.emitter.setAdvertising(enable=True)
 		io.info('Currently advertising ' + advData.hex() + ' using ' + self.args['INTERFACE'])
 
-	def onStart(self):
-		# Power Level between -20 and 70 dbm
-		self.txPwLvl = MOCK_VALUES['gatt']['txPower']
-		# Local short name
-		self.shortName = MOCK_VALUES['gap']['localName']
-
-		self.addPrimaryService()
-		self.startAdv()
+	def onMasterConnect(self, packet):
+		if MOCK_VALUES['control']['enable_pairing']:
+			self.module.pairing(active='passive')
 		return True
 
 	def onEnd(self):
 		return True
-	
+
 	def onKey(self,key):
 		return True

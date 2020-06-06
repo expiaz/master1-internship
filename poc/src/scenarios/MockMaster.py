@@ -8,39 +8,19 @@ class MockMaster(scenario.Scenario):
 	useKeyboard = False
 
 	def onStart(self):
-
-		# slave_iface = 'hci{}'.format(int(self.args['INTERFACE'][-1:]) + 1)
-		# io.info('Using slave interface ' + slave_iface)
-		# m = utils.loadModule('ble_info')
-		# m['SHOW_CAPABILITIES'] = 'no'
-		# m['INTERFACE'] = slave_iface
-		# io.info('Recovering ' + slave_iface + ' BD address')
-		# result = m.execute()
-		# if result['success'] == False:
-		# 	io.fail('Failed to recover BD address from interface ' + slave_iface)
-		# 	utils.exitMirage()
-		
-		# iface_info = result['output']
-		# iface_bd = iface_info['ADDRESS']
-		# io.info('Slave interface (' + slave_iface + ') BD address : ' + iface_bd)
-
-		# m = utils.loadModule('ble_slave')
-		# m['INTERFACE'] = slave_iface
-		# m['GATT_FILE'] = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + '/gatt.ini'
-		# m['SCENARIO'] = 'MockSlave'
-		# m.execute()
-
-		# scan for slave		
 		self.target = ""
 
-		self.module.receiver.onEvent("BLEAdvertisement",callback=self.onAdvertisement)
-		self.module.receiver.setScan(enable=True)
+		#self.module.receiver.onEvent("BLEAdvertisement",callback=self.onAdvertisement)
+		#self.module.receiver.setScan(enable=True)
 		
-		#self.module.scan(seconds=2)
-		#self.module.connect(connectionType="public")
+		self.module.scan(seconds='2')
+		self.module.connect(self.module.targets[0])
 		return True
 
 	def onAdvertisement(self, packet):
+		if self.target != "":
+			return
+
 		if packet.type == 'ADV_IND':
 			for part in packet.data:
 				# search for our slave in GAP adv data
@@ -49,20 +29,50 @@ class MockMaster(scenario.Scenario):
 		if self.target != "":
 			io.success('Found slave at ' + self.target)
 			self.module.receiver.setScan(enable=False)
-			self.module.connect(target=self.target, connectionType='public')
+
+			# m = utils.loadModule('ble_connect')
+			# m['TARGET'] = self.target
+			# m['CONNECTION_TYPE'] = 'public'
+			# m['INTERFACE'] = self.args['INTERFACE']
+			# m['TIMEOUT'] = '3'
+			# ret = m.execute()
+			# if ret['success'] == False:
+			# 	utils.exitMirage()
+
+			self.module.connect(target=self.target)
 		
 	def onSlaveConnect(self):
 		io.success('Connected to slave')
-		# TODO requests
+		self.requestSlave()
+
+		if MOCK_VALUES['control']['enable_pairing']:
+			self.module.pairing(active='active')
+			self.requestSlave()
+
+		self.module.disconnect()
 		return True
+
+	def requestSlave(self):
+		requests = MOCK_VALUES['control']['number_requests']
+		tick = MOCK_VALUES['control']['request_time_interval']
+
+		# m = utils.loadModule('ble_discover')
+		# m['INTERFACE'] = self.args['INTERFACE']
+		# m['WHAT'] = 'all'
+
+		while requests > 0:
+			self.module.discover(what='all')
+			requests = requests - 1
+			utils.wait(seconds=tick)
+			# ret = m.execute()
+			# if ret['success']:
+			# 	requests = requests - 1
+			# 	utils.wait(seconds=tick)
+			# else:
+			# 	requests = 0
 
 	def onEnd(self):
 		return True
 	
 	def onKey(self,key):
-		return True
-
-	def onSlaveConnectionParameterUpdateRequest(self, packet):
-		print('onSlaveConnectionParameterUpdateRequest')
-		print(packet.__class__)
 		return True
