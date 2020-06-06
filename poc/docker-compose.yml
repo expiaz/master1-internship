@@ -12,5 +12,13 @@ services:
         - "3000:80"
     tty: true
     volumes:
-        - .:/poc
+        # mandatory for bbc micro:bit
         - /dev:/dev
+        # mirage custom scenarios and modules
+        - ./src:/root/.mirage/
+        # needed files for poc
+        - ./test:/poc/test
+        - ./libs:/poc/libs
+        - ./server:/poc/server
+        - ./public:/poc/public
+        - ./shared:/poc/shared

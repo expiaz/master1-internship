@@ -25,4 +25,4 @@ RUN cd /poc/btlejack && \
     python3 setup.py egg_info && \
     pip3 install -r btlejack.egg-info/requires.txt
 
-RUN rm -rf /poc
+RUN rm -rf /poc && mkdir /poc
