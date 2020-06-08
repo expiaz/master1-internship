@@ -2,7 +2,7 @@ from mirage.libs import utils
 
 MOCK_VALUES = {
     'gatt': {
-        'txPower': 20
+        'txPower': 45 # value between -20 and 70 dbm
     },
     'gap': {
         'localName': 'Test slave'

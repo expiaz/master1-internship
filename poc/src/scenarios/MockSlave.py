@@ -38,7 +38,7 @@ class MockSlave(scenario.Scenario):
 			2,
 			# Tx Power Level data type value
 			0x0A,
-			# Tx Power Level value between -20 and 70 dbm
+			# Tx Power Level
 			self.txPwLvl,
 
 			# Length
