@@ -30,8 +30,6 @@ class ble_locate(module.WirelessModule):
 	def approximateDistance(self, rssi, txPower):
 		if txPower is None:
 			return None
-		if (rssi < 0):
-			rssi = -rssi
 		return round(pow(10, ((txPower - rssi) / (10 * self.n))), 2)
 
 	def checkAdvertisementsCapabilities(self):
@@ -66,7 +64,7 @@ class ble_locate(module.WirelessModule):
 						company = ble.AssignedNumbers.getCompanyByNumber(int(part.company_id))
 						if company is None:
 							company = ""
-					elif hasattr(part,"flags"):
+					elif hasattr(part, "flags"):
 						flags = ble.AssignedNumbers.getStringsbyFlags(part.flags)
 				self.devices[address] = {
 					'address': address,
@@ -80,12 +78,41 @@ class ble_locate(module.WirelessModule):
 				self.values[address] = deque(maxlen=self.windowSize)
 				self._dirty = True
 			
+	def onConnectionFound(self, accessAddress, rssi, channel):
+		if accessAddress not in self.connections:
+			self.connections[accessAddress] = {
+				'address': accessAddress,
+				'rssi': rssi,
+				'channels': set([channel])
+			}
+			self.values[accessAddress] = deque(maxlen=self.windowSize)
+			self._dirty = True
+		else:
+			self.connections[accessAddress]['channels'].add(channel)
+			self.values[accessAddress].append(rssi)
+			avg_rssi = round(sum(self.values[address]) / len(self.values[address]))
+			if self.connections[accessAddress]['rssi'] != avg_rssi:
+				self.connections[accessAddress]['rssi'] = avg_rssi
+				self._dirty = True
 
 	def display(self, devices, connections):
-		deviceHdr = list(next(iter(devices.values())).keys()) if len(devices) else []
-		deviceContent = [list(device.values()) for device in devices.values()]
-		io.chart(deviceHdr, deviceContent, "Devices found")
-		# io.chart(list(connections.keys()), list(connections.values()), "Connections found")
+		if len(devices):
+			deviceHdr = list(next(iter(devices.values())).keys()) if len(devices) else []
+			deviceContent = [list(device.values()) for device in devices.values()]
+			io.chart(deviceHdr, deviceContent, "Devices found")		
+		if len(connections):
+			connHdr = list(next(iter(connections.values())).keys()) if len(connections) else []
+			connContent = [list(connection.values()) for connection in connections.values()]
+			io.chart(connHdr, connContent, "Connections found")
+
+	def loop(self):
+		remainingTime = self.scanningTime
+		while remainingTime != 0:
+			utils.wait(seconds=1)
+			remainingTime -= 1
+			if (self._dirty):
+				self.callback(self.devices, self.connections)
+				self._dirty = False
 
 	def run(self):
 		self.emitter = self.getEmitter(interface=self.args['INTERFACE'])
@@ -97,23 +124,26 @@ class ble_locate(module.WirelessModule):
 		# store rssi values over time
 		self.values = {}
 		self.callback = self.args['CALLBACK'] if callable(self.args['CALLBACK']) else self.display
-
 		self._dirty = False
+		self.scanningTime = utils.integerArg(self.args['TIME']) if self.args["TIME"] != "" else -1
 
 		if self.checkAdvertisementsCapabilities():
 			self.receiver.setSweepingMode(enable=True, sequence=[37,38,39])
 			self.receiver.sniffAdvertisements(address="FF:FF:FF:FF:FF:FF")
 			self.receiver.onEvent("*", callback=self.onAdvertisement)
-			
-			remainingTime = utils.integerArg(self.args['TIME']) if self.args["TIME"] != "" else -1
-			while remainingTime != 0:
-				utils.wait(seconds=1)
-				remainingTime -= 1
-				if (self._dirty):
-					self.callback(self.devices, self.connections)
-					self._dirty = False
+			self.loop()
+			# stop listening for advertisements
+			self.receiver.removeCallbacks()
 		else:
 			io.fail("Interface provided is not able to sniff advertisements.")
 
-		# Enter your code here.
-		return self.ok({})
+		if self.checkExistingConnectionCapabilities():
+			self.receiver.scanExistingConnections(onConnection=self.onConnectionFound)
+			self.loop()
+		else:
+			io.fail("Interface provided is not able to sniff existing connections.")
+
+		return self.ok({
+			'devices': self.devices,
+			'connections': self.connections
+		})

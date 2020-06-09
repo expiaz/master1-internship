@@ -2,14 +2,14 @@ from mirage.libs import utils
 
 MOCK_VALUES = {
     'gatt': {
-        'txPower': 45 # value between -20 and 70 dbm
+        'txPower': -55 # value between -100 and +20 dbm
     },
     'gap': {
         'localName': 'Test slave'
     },
     'control': {
-        'number_requests': 1,
-        'request_time_interval': 10,
+        'number_requests': 100,
+        'request_time_interval': 1,
         'enable_pairing': True
     }
 }

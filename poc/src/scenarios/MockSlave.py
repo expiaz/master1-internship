@@ -1,6 +1,7 @@
 from mirage.core import scenario
 from mirage.libs import io,ble,esb,utils
 from mirage.libs.bt_utils.assigned_numbers import AD_TYPES
+import struct
 from mock import MOCK_VALUES
 
 class MockSlave(scenario.Scenario):
@@ -8,8 +9,8 @@ class MockSlave(scenario.Scenario):
 	useKeyboard = False
 
 	def onStart(self):
-		# Power Level between -20 and 70 dbm
-		self.txPwLvl = MOCK_VALUES['gatt']['txPower']
+		# Power Level between -100 and 20 dbm
+		self.txPwLvl = struct.pack('<b', MOCK_VALUES['gatt']['txPower'])
 		# Local short name
 		self.shortName = MOCK_VALUES['gap']['localName']
 
@@ -21,7 +22,7 @@ class MockSlave(scenario.Scenario):
 		# Tx Power Level primary service
 		self.module.server.addPrimaryService(ble.UUID(name="Tx Power").data)
 		# Tx Power Level characteristic
-		self.module.server.addCharacteristic(bytes.fromhex('2A07'), bytes([self.txPwLvl]), permissions=["Read", "Notify"]) # 20 dbm
+		self.module.server.addCharacteristic(bytes.fromhex('2A07'), self.txPwLvl, permissions=["Read", "Notify"]) # 20 dbm
 
 	def startAdv(self):
 		# Advertisement data sent with ADV_IND
@@ -39,7 +40,7 @@ class MockSlave(scenario.Scenario):
 			# Tx Power Level data type value
 			0x0A,
 			# Tx Power Level
-			self.txPwLvl,
+		]) + self.txPwLvl + bytes([
 
 			# Length
 			1 + len(self.shortName),

@@ -10,11 +10,11 @@ class MockMaster(scenario.Scenario):
 	def onStart(self):
 		self.target = ""
 
-		#self.module.receiver.onEvent("BLEAdvertisement",callback=self.onAdvertisement)
-		#self.module.receiver.setScan(enable=True)
+		self.module.receiver.onEvent("BLEAdvertisement",callback=self.onAdvertisement)
+		self.module.receiver.setScan(enable=True)
 		
-		self.module.scan(seconds='2')
-		self.module.connect(self.module.targets[0])
+		#self.module.scan(seconds='2')
+		#self.module.connect(self.module.targets[0])
 		return True
 
 	def onAdvertisement(self, packet):
