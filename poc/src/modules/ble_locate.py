@@ -13,9 +13,10 @@ class ble_locate(module.WirelessModule):
 			"INTERFACE": "microbit0",
 			'TIME': '5',
 			'CALLBACK': None,
-			'WINDOW': '5'
+			'WINDOW': '5',
+			'SCAN_TYPE': 'all'
 		}
-		self.dependencies = ["ble_sniff"]
+		self.dependencies = []
 
 	'''
 	Approximation of the distance using signal strength indicator from calibrated value using following formulae:
@@ -127,21 +128,22 @@ class ble_locate(module.WirelessModule):
 		self._dirty = False
 		self.scanningTime = utils.integerArg(self.args['TIME']) if self.args["TIME"] != "" else -1
 
-		if self.checkAdvertisementsCapabilities():
+		scanDev = self.args['SCAN_TYPE'] == 'all' or self.args['SCAN_TYPE'] == 'devices'
+		if scanDev:
+			io.info('Scanning for existing devices')
 			self.receiver.setSweepingMode(enable=True, sequence=[37,38,39])
 			self.receiver.sniffAdvertisements(address="FF:FF:FF:FF:FF:FF")
 			self.receiver.onEvent("*", callback=self.onAdvertisement)
 			self.loop()
 			# stop listening for advertisements
+			self.receiver.setSweepingMode(enable=False)
 			self.receiver.removeCallbacks()
-		else:
-			io.fail("Interface provided is not able to sniff advertisements.")
 
-		if self.checkExistingConnectionCapabilities():
-			self.receiver.scanExistingConnections(onConnection=self.onConnectionFound)
+		scanConn = self.args['SCAN_TYPE'] == 'all' or self.args['SCAN_TYPE'] == 'connections'
+		if scanConn:
+			io.info('Scanning for existing connections')
+			self.receiver.scanExistingConnections(onConnection=self.onConnectionFound, resetState=self.args['SCAN_TYPE'] == 'all')
 			self.loop()
-		else:
-			io.fail("Interface provided is not able to sniff existing connections.")
 
 		return self.ok({
 			'devices': self.devices,
