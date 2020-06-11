@@ -20,7 +20,7 @@ RUN cd /poc/mirage && \
     python3 setup.py egg_info && \
     pip3 install -r mirage.egg-info/requires.txt
 
-RUN pip3 install flask
+RUN pip3 install flask eventlet flask-socketio
 
 RUN rm -rf /poc && mkdir /poc
 
