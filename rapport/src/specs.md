@@ -3,6 +3,39 @@
 
 Sujet: Mettre en place des attaques sur le protocole *Bluetooth Low Energy* (Bluetooth Smart)
 
+Target: BLE 4.0 dit legacy pas de LESC avec methode d'appairage JustWorks
+Pourquoi 4.0 ?
+- Car 4.2 LESC ECCDH bcp plus difficile a craquer et bcp moins d'outils pour le faire
+- beaucoup d'appareils sont encore en 4.0 legacy ou meme sans pairing
+Pourquoi JustWorks ?
+- target IOT donc objets simples et peu chers (capteurs) n'embarquant pas d'autres moyens d'auth
+
+Meme si mecanisme securite offert par BLE avec appairage niveau lien, bcp de constructeur utilisent mecansimes custom niveau application bases sur les standard de crypto (AES) et methodes comme challenge-response. Clef flashee dans l'appareil BLE et distribuee au controller via un serveur distant par une application mobile lors de la creation de compte/identification de l'appareil BLE pour la premiere fois.  
+
+Appareil transportable d'attaques sur les appareils BLE nearby
+ex: Raspi avec dongles et/ou sniffer BLE (BBC Micro) faisant tourner container DOcker avec le Poc dessus
+
+## Fonctionnalites
+
+- Inventaire ..
+- ...
+- ...
+- ...
+
+## Architecture
+
+serveur flask + websockets
+application js (hyperapp) + socketio
+framework offensif Mirage (python) + bindings custom pour communication API et non CLI
+
+## Interface
+
+GUI web HTML + JS
+
+## Tests
+
+Mock reseau BLE avec outils mirage slave + master
+
 ## Fonctionnalités
 
 La preuve de concept devra fournir plusieurs fonctionnalités offensive décritent ci-après.

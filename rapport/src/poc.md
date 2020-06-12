@@ -1,9 +1,28 @@
 
 # Preuve de concept
 
-## Sniffing
+## Scan
 
-## Localization
+Adv ok seulement 3 channels, utilisation du sweeping sur 1 micro bit
+
+Data difficile car 37 channels et transmissions non constantes dans chaque channel, meme avec sweeping sur 1 micro bit ne peut intercepter que 1/37e des communications, jeu chat et souris car appareils hop et bbc sweep pour trouver des comms
+
+## Localisation
+
+TODO differentes methodes de localisation
+- avoir une distance (rssi / toa)
+- avoir un point dans l'espace (aoa/aod ou trilateration/triangulation)
+
+### RSSI
+
+incertitude rssi +-6dbm et fortement influence par environnement
+
+peu etre reduit avec echantillonage sur le temps, modele de calculs et filtres (kalmann)
+
+BLE utilise plusieurs puissance emissions donc besoin d'une valeur ref pour estimer distance depuis RSSI. Valeur generalement RSSI mesure a 1m par le constructeur et exposee dans les annonce ou en tant que service et nommee txpower (standardisee par GAP/GATT).
+
+TODO formule distance
+env factor = 2 pour IPS
 
 ### Fingerprinting
 
@@ -61,4 +80,6 @@ Ou RSS (range) + AOA (direction)
 
 ### AOA
 
-## MITM
+## Spoof
+
+## Hijack

@@ -115,7 +115,7 @@ Difficultés à configurer pandoc correctement avec les extensions pour reprodui
 Étude des specifications BLE pour rédiger la partie présentation du protocole.
 Redaction de l'etude du protocole BLE dans le rapport.
 
-# Semaine 8 - 02/06
+# Semaine 8 - 01/06
 
 Rédaction partie étude de marché sur les objets connectés dans le rapport.
 Rédaction partie analyse de l'existant outils offensifs dans le rapport.
@@ -124,3 +124,18 @@ Rédaction partie framework de Mirage dans le rapport.
 Mise en place d'un slave avec scenario Mirage.
 Mise en place d'un master avec scenario Mirage.
 Mise en place d'un reseau de test via le slave et master BLE.
+
+# Semaine 9 - 08/06
+
+Module Mirage de localisation `ble_locate`
+- Recuperation du RSSI et calcul de la distance si TxPower disponible
+- Scan pour les annonces pour les connections existantes et calcul une moyenne sur N echantillons des relevés
+
+Integration de flask, Socket.IO et Hyperapp pour l'interface de l'application
+Architecture du front en composants et bindings websockets
+
+TODO:
+Bindings websockets flask
+Bindings flask - Mirage (surcharge modules et steps pour log ?)
+Design front (integration & style)
+Implementation autres attaques

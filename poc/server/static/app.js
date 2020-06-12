@@ -6,11 +6,14 @@
         logs: [],
         devices: [],
         connections: [],
-        action: null
+        attack: null,
+        target: null
     }
 
     const actions = {
-        // server notifications
+        /**
+         * server notifications
+         */
         
         log: message => ({ logs }) => ({
             logs: [
@@ -18,61 +21,124 @@
                 message
             ]
         }),
+        // device scan report
         updateDevices: devices => ({
             devices
         }),
+        // connections scan report
         updateConnections: connections => ({
             connections
         }),
 
-        // server requests
+        /**
+         * server requests
+         */
 
-        startScan: () => {
-            ws.emit('attack', {
-                type: 'scan'
-            })
+        startAttack: ({ attack, target }) => {
+            ws.emit('startAttack', { attack, target })
+            return { attack, target }
+        },
+        stopAttack: ({ attack, target }) => {
+            ws.emit('stopAttack', { attack, target })
+            return { attack: null, target: null }
         }
     }
 
-    const view = (state, actions) => html`
-        <main>
-            <div class="controls">
-                <button onclick=${actions.startScan}>Scan</button>
-            </div>
+    const view = (state, actions) => {
+        deviceHdr = 'addres,name,company,flags,rssi,txPower,distance,spoofing'.split(',')
+        connectionHdr = 'accessAddress,rssi'.split(',')
 
-            <h2>Devices</h2>
-            <Table data=${state.devices} lineView=${Device} />
+        return html`
+            <main>
+                <div class="controls">
+                    <Control attack="scan" />
+                </div>
 
-            <h2>Connections</h2>
-            <Table data=${state.connections} lineView=${Connection} />
+                <h2>Devices</h2>
+                <List header=${deviceHdr}>
+                    ${state.devices.map(Device)}
+                <//>
 
-            <h2>Logs</h2>
-            <div class="logs">
-            ${state.logs.map(({ type, message }, i) => html`
-                <p class="log ${type}" key=${i}>${message}</p>
-            `)}
-            </div>
-        </main>
-    `
+                <h2>Connections</h2>
+                <List header=${connectionHdr}>
+                    ${state.connections.map(Connection)}
+                <//>
+
+                <h2>Logs</h2>
+                <div class="logs">
+                ${state.logs.map(({ type, message }, i) => html`
+                    <p class="log ${type}" key=${i}>${message}</p>
+                `)}
+                </div>
+            </main>
+        `
+    }
 
     // Components
 
-    const Table = ({ data, lineView }) => !!data.length
-        ? html `
-            <table>
-                <thead>
-                    <tr>
-                    ${Object.keys(data[0]).map(field => html`
-                        <td>${field}</td>
-                    `)}
-                    </tr>
-                </thead>
-                <tbody>
-                ${data.map(line => lineView(line))}
-                </tbody>
-            </table>
+    const Control = ({ attack, target = null }) => (state, actions) => {
+
+        const getAttributes = () => {
+            if (state.attack === attack) {
+                // current target mismatch, not target of the attack
+                if (target !== null && state.target !== target) {
+                    return {
+                        disabled: true
+                    }
+                }
+                // attack and target matches
+                return {
+                    onclick: () => {
+                        actions.stopAttack({ attack, target })
+                    }
+                }
+            } else if (state.attack === null) {
+                // no attack currently executing
+                return {
+                    onclick: () => {
+                        actions.startAttack({ attack, target })
+                    }
+                }
+            } else {
+                // not concerned by the attack
+                return {
+                    disabled: true
+                }
+            }
+        }
+
+        const getWording = () => {
+            if (state.attack === attack) {
+                // current target mismatch, not target of the attack
+                if (target !== null && state.target !== target) {
+                    return attack
+                }
+                // attack and target matches
+                return `Stop ${attack}`
+            } else if (state.attack === null) {
+                // no attack currently executing
+                return `Start ${attack}`
+            } else {
+                // not concerned by the attack
+                return attack
+            }
+        }
+
+        return html`
+            <button ... ${getAttributes()}>
+                ${getWording()}
+            </button>
         `
-        : null
+    }
+
+    const List = ({ header }, children) => h('table', {}, [
+        h('thead', {}, [
+            h('tr', {}, header.map(
+                field => h('td', {}, field)
+            ))
+        ]),
+        h('tbody', {}, children)
+    ])
 
     const Device = ({ address, name, company, flags, rssi, txPower, distance }) => html`
         <tr key=${address}>
@@ -83,6 +149,7 @@
             <td>${rssi} dBm</td>
             <td>${txPower} dBm</td>
             <td>${distance} meters</td>
+            <td><Control attack="spoofing" target=${address} /></td>
         </tr>
     `
 
@@ -90,11 +157,13 @@
         <tr key=${accessAddress}>
             <td>${accessAddress}</td>
             <td>${rssi} dBm</td>
+            <td><Control attack="hijack" target=${accessAddress} /></td>
         </tr>
     `
 
     htm.use([
-        Table,
+        Control,
+        List,
         Device,
         Connection
     ])
@@ -128,8 +197,8 @@
 
     ws.on('log', main.log)
 
-    ws.on('devices', main.updateDevices)
+    ws.on('updateDevices', main.updateDevices)
 
-    ws.on('connections', main.updateConnections)
+    ws.on('updateConnections', main.updateConnections)
 
 })();
