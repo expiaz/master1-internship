@@ -7,10 +7,51 @@
 *Diplôme préparé*: Master 1 Ingénierie de Systèmes Complexes  
 *Spécialité*: Cybersécurité des Systèmes Embarqués  
 
-## Retrieve repo
-git clone --recursive https://.../ble-internship.git && cd ble-internship
+## Clone repository
 
-## Building report
+```bash
+$ git clone --recursive https://gitlab.com/hackrf/hackrf-domotique.git
+$ cd hackrf-domotique
+```
+
+## Files architecture
+
+
+
+## Launching PoC
+
+Dependencies:
+- `docker`
+- `docker-compose`
+- `git`
+
+First you need to patch the source code of one of the modules: `Mirage`. The submodule is localted in `poc/libs/mirage`.  
+From there an helper script named `apply_patch` will apply the patch automagically for you.
+```bash
+$ cd poc/libs
+$ ./apply_patch.sh
+```
+
+The PoC is served with `Docker`, a `Dockerfile` and corresponding `docker-compose` is provided.  
+Use the bash script `run` to start the container and get a shell into.
+```bash
+$ cd poc
+$ ./run.sh
+```
+There is also the `stop` shell script which does the reverse (i.e. teardown the container).
+
+Once you are in the container, the files are in `/poc` root folder.
+```bash
+root@mirage# cd /poc/server
+root@mirage# python3 app.py
+```
+
+Then open a web browser to `http:localhost:8080` to get the interface, from there you`ll be able to identify targets and launch live attacks.
+```bash
+$ chrome http://localhost:8080
+```
+
+## Building paper
 
 Dependencies:
 - `pandoc`
@@ -24,20 +65,7 @@ brew cask install mactex
 # pandoc and pandoc filters
 brew install pandoc pandoc-crossref pandoc-citeproc
 # build paper
-cd rapport
+cd paper
 pandoc -d pandoc.yaml -o paper.pdf
 open paper.pdf
 ```
-
-## Building doc
-cd doc
-sphinx?
-
-## Patching Mirage source code
-cd poc/mirage
-git apply ../mirage.patch
-
-## Building the image
-cd poc
-docker-compose up -d
-chrome http://localhost:3000
