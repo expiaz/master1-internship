@@ -8,7 +8,6 @@ fi
 
 if [ -d "$target" ]; then
     cd "$target"
-    git add *
     git diff HEAD > "../$target.patch"
     echo "patch generated at $target.patch"
 else

@@ -8,7 +8,6 @@ fi
 
 if [ -f "$target.patch" ]; then
     cd "$target"
-    git stash push
     git apply "../$target.patch"
     echo "patch applied from $target.patch to $target"
 else
