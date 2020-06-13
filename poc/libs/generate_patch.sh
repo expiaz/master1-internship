@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+
+rat=$(pwd)
+echo "generate patch pwd: $rat"
 
 if [ $# -eq 0 ]; then
     target="mirage"

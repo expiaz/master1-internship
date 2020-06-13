@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #docker run -ti --privileged --name=mirage --net=host poc/mirage /bin/bash
 
