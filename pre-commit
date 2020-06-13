@@ -6,11 +6,11 @@ echo "pre-commit hook running from $base"
 if [ -d "$base/poc/libs/mirage" ]; then
 	echo "Creating mirage patch"
 	cd "$base/poc/libs"
-	./generate_patch.sh
 	# submodule don't have their own git repo but is stored within the repo (.git/modules)
 	# so env variables aren't pointing to the good place
 	# env -i executes the provided command in a new environment
-	env -i git add mirage.patch
+	env -i ./generate_patch.sh
+	git add mirage.patch
 	cd $base
 fi
 
