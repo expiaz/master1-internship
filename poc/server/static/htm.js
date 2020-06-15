@@ -148,6 +148,9 @@ global.htm = {
 		if (Array.isArray(component)) component.forEach(this.use)
 		else componentMap[component.name] = component
 	},
+	component: function (component) {
+		componentMap[component.name] = component
+	},
 	bind: function (ctx) {
 		return transformComponents.bind(ctx)
 	}

@@ -1,0 +1,162 @@
+body {
+    font-size: 16px;
+    font-family: Lato;
+    font-weight: normal;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+}
+
+.container h2 {
+    margin: 10px 0;
+}
+
+.container .content {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    padding: 25px;
+}
+
+/**
+ * RADAR + LOGS
+ */
+
+.content .controls {
+    margin-bottom: 25px;
+}
+
+.content .radar {
+    border: 2px solid black;
+    border-radius: 3px;
+    height: 50%;
+    width: 100%;
+    position: relative;
+}
+
+.radar .position {
+    position: absolute;
+    top: auto;
+    left: auto;
+    border-radius: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.content .logs {
+    margin-top: 25px;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.logs .messages {
+    overflow-y: scroll;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.messages .message {
+    margin: 5px 0;
+}
+
+.message.fail {
+    color: red;
+}
+
+.message.success {
+    color: green;
+}
+
+.message.info {
+    color: black;
+}
+
+.message.warning {
+    color: yellow;
+}
+
+/**
+ * LISTINGS
+ */
+
+.container .lists {
+    padding: 25px;
+    width: 60%;
+}
+
+.lists .devices {
+    margin-bottom: 25px;
+}
+
+.lists table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.lists table thead {
+    font-weight: bold;
+}
+
+.lists table td {
+    border-bottom: 1px solid black;
+    padding: 10px 5px;
+}
+
+.lists table tbody td {
+    padding: 20px 10px;
+}
+
+/**
+ * BUTTONS
+ */
+
+.control {
+    border-radius: 3px;
+    border-width: 2px;
+    border-style: solid;
+    background: none;
+    font-family: Lato;
+    padding: 8px 16px;
+    font-weight: bolder;
+}
+
+.control:hover {
+    cursor: pointer;
+}
+
+.control.cancel {
+    background: #e9bcbc;
+    border-color: #e9bcbc;
+}
+
+.control.cancel:hover {
+    background: #e29595;
+    border-color: #e29595;
+}
+
+.control.start {
+    background: #8de2b1;
+    border-color: #8de2b1;
+}
+
+.control.start:hover {
+    background: #5de094;
+    border-color: #5de094;
+}
+
+.control:disabled {
+    background: white;
+}
+
+.control:disabled:hover {
+    cursor: default;
+}

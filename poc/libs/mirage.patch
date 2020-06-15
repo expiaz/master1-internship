@@ -1,3 +1,15 @@
+diff --git a/mirage/core/app.py b/mirage/core/app.py
+index 4a867a5..92e53b9 100644
+--- a/mirage/core/app.py
++++ b/mirage/core/app.py
+@@ -47,6 +47,7 @@ class App(interpreter.Interpreter):
+ 		self.loader = loader.Loader()
+ 		self.modules = []
+ 		self.taskManager = taskManager.TaskManager()
++		self.logger = None
+ 
+ 		# Creation of the temporary directory
+ 		if not os.path.exists(self.tempDir):
 diff --git a/mirage/core/module.py b/mirage/core/module.py
 index fe9bcad..caf4d20 100644
 --- a/mirage/core/module.py
@@ -173,34 +185,19 @@ index c531745..4369dd4 100644
  			self.customMirageFirmware = False
  			self.receptionBuffer = b""
  			self.lock = Lock()
-diff --git a/mirage/libs/ble_utils/helpers.py b/mirage/libs/ble_utils/helpers.py
-index 14b119e..25eff3f 100644
---- a/mirage/libs/ble_utils/helpers.py
-+++ b/mirage/libs/ble_utils/helpers.py
-@@ -173,14 +173,18 @@ def rssiToDbm(rssi):
- 		-28.8
+diff --git a/mirage/libs/ble_utils/packets.py b/mirage/libs/ble_utils/packets.py
+index a7f8bf3..05080a7 100644
+--- a/mirage/libs/ble_utils/packets.py
++++ b/mirage/libs/ble_utils/packets.py
+@@ -265,7 +265,7 @@ class BLEAdvertisement(BLEPacket):
+ 	def toString(self):
+ 		return "<< "+self.name+" | type="+self.type+" | addr="+self.addr+" | data="+self.getRawDatas().hex()+" >>"
  
+-class BLEAdvInd(BLEAdvertisement):
++class BLEAdvInd():
  	'''
-+	ret = rssi
- 	if rssi < -48:
--		return -120
-+		ret = -120
- 	elif rssi <= -45:
--		return 6*(rssi+28)
-+		ret = 6*(rssi+28)
- 	elif rssi <= 30:
--		return (99*(rssi - 62)/110)
-+		ret = (99*(rssi - 62)/110)
- 	elif rssi <= 35:
--		return (60*(rssi - 35) / 11)
-+		ret = (60*(rssi - 35) / 11)
- 	else:
--		return 0
-+		ret = 0
-+
-+	print('rssi to Dbm {} => {}'.format(rssi, ret))
-+	return ret
- 
+ 	Mirage Bluetooth Low Energy Packet - ADV_IND
+ 	
 diff --git a/mirage/libs/ble_utils/pcap.py b/mirage/libs/ble_utils/pcap.py
 index 4b6dc5f..798b23d 100644
 --- a/mirage/libs/ble_utils/pcap.py
@@ -253,17 +250,75 @@ index 6611ef9..cc59fa2 100644
  '''
  COMPATIBLE_VENDORS = [0,10,13,15,18,48,57]
  
+diff --git a/mirage/libs/io.py b/mirage/libs/io.py
+index 27d964b..d7d7a2b 100644
+--- a/mirage/libs/io.py
++++ b/mirage/libs/io.py
+@@ -5,6 +5,7 @@ import matplotlib
+ matplotlib.use('Agg')
+ import matplotlib.pyplot as plt
+ import matplotlib.animation as animation
++from mirage.libs import utils
+ 
+ '''
+ This submodule provides some useful functions allowing to interact with the users.
+@@ -120,6 +121,9 @@ def success(message):
+ 	'''
+ 	if VERBOSITY_LEVEL > VerbosityLevels.NONE:
+ 		print(colorize("[SUCCESS] ","green")+message)
++		if utils.getLogger() != None:
++			utils.getLogger()('success', message)
++
+ 
+ def fail(message):
+ 	'''
+@@ -130,6 +134,9 @@ def fail(message):
+ 	'''
+ 	if VERBOSITY_LEVEL > VerbosityLevels.NONE:
+ 		print(colorize("[FAIL] ","red")+message)
++		if utils.getLogger() != None:
++			utils.getLogger()('fail', message)
++
+ 
+ def info(message):
+ 	'''
+@@ -140,6 +147,8 @@ def info(message):
+ 	'''
+ 	if VERBOSITY_LEVEL == VerbosityLevels.ALL:
+ 		print(colorize("[INFO] ","yellow")+message)
++		if utils.getLogger() != None:
++			utils.getLogger()('info', message)
+ 
+ 
+ def displayPacket(packet):
+@@ -162,6 +171,8 @@ def warning(message):
+ 	'''
+ 	if VERBOSITY_LEVEL > VerbosityLevels.NO_INFO_AND_WARNING:
+ 		print(colorize("[WARNING] ","purple")+message)
++		if utils.getLogger() != None:
++			utils.getLogger()('warning', message)
+ 
+ 
+ def ask(prompt,default="",final=": "):
 diff --git a/mirage/libs/utils.py b/mirage/libs/utils.py
-index af8b3c1..db4c8a7 100644
+index af8b3c1..e311c8d 100644
 --- a/mirage/libs/utils.py
 +++ b/mirage/libs/utils.py
-@@ -229,6 +229,10 @@ def loadModule(name):
+@@ -229,6 +229,18 @@ def loadModule(name):
  	from mirage.core import app
  	return app.App.Instance.loader.load(name)
  
 +def isDebugMode():
 +	from mirage.core import app
-+	return app.App.Instance.debugMode;
++	return app.App.Instance.debugMode
++
++def registerLogger(logger):
++	from mirage.core import app
++	app.App.Instance.logger = logger
++
++def getLogger():
++	from mirage.core import app
++	return app.App.Instance.logger
 +
  def exitMirage():
  	'''

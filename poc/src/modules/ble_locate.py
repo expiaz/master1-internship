@@ -12,7 +12,8 @@ class ble_locate(module.WirelessModule):
 			'ENVIRONMENT_FACTOR': '2',
 			"INTERFACE": "microbit0",
 			'TIME': '5',
-			'CALLBACK': None,
+			'DEVICE_CALLBACK': None,
+			'CONNECTION_CALLBACK': None,
 			'WINDOW': '5',
 			'SCAN_TYPE': 'all'
 		}
@@ -41,6 +42,8 @@ class ble_locate(module.WirelessModule):
 
 	def onAdvertisement(self, packet):
 		if isinstance(packet, ble.BLEAdvertisement) and hasattr(packet, 'additionalInformations'):
+			io.displayPacket(packet)
+			type = packet.type
 			address = packet.addr
 			rssi = packet.additionalInformations.rssi
 			if address in self.devices:
@@ -69,6 +72,7 @@ class ble_locate(module.WirelessModule):
 						flags = ble.AssignedNumbers.getStringsbyFlags(part.flags)
 				self.devices[address] = {
 					'address': address,
+					'type': type,
 					'name': localName,
 					'company': company,
 					'flags': flags,
@@ -96,24 +100,17 @@ class ble_locate(module.WirelessModule):
 				self.connections[accessAddress]['rssi'] = avg_rssi
 				self._dirty = True
 
-	def display(self, devices, connections):
+	def display(self, data):
+		devices = self.devices
 		if len(devices):
 			deviceHdr = list(next(iter(devices.values())).keys()) if len(devices) else []
 			deviceContent = [list(device.values()) for device in devices.values()]
-			io.chart(deviceHdr, deviceContent, "Devices found")		
+			io.chart(deviceHdr, deviceContent, "Devices found")	
+		connections = self.connections	
 		if len(connections):
 			connHdr = list(next(iter(connections.values())).keys()) if len(connections) else []
 			connContent = [list(connection.values()) for connection in connections.values()]
 			io.chart(connHdr, connContent, "Connections found")
-
-	def loop(self):
-		remainingTime = self.scanningTime
-		while remainingTime != 0:
-			utils.wait(seconds=1)
-			remainingTime -= 1
-			if (self._dirty):
-				self.callback(self.devices, self.connections)
-				self._dirty = False
 
 	def run(self):
 		self.emitter = self.getEmitter(interface=self.args['INTERFACE'])
@@ -124,7 +121,8 @@ class ble_locate(module.WirelessModule):
 		self.connections = {}
 		# store rssi values over time
 		self.values = {}
-		self.callback = self.args['CALLBACK'] if callable(self.args['CALLBACK']) else self.display
+		self.deviceCallback = self.args['DEVICE_CALLBACK'] if callable(self.args['DEVICE_CALLBACK']) else self.display
+		self.connectionCallback = self.args['CONNECTION_CALLBACK'] if callable(self.args['CONNECTION_CALLBACK']) else self.display
 		self._dirty = False
 		self.scanningTime = utils.integerArg(self.args['TIME']) if self.args["TIME"] != "" else -1
 
@@ -134,7 +132,15 @@ class ble_locate(module.WirelessModule):
 			self.receiver.setSweepingMode(enable=True, sequence=[37,38,39])
 			self.receiver.sniffAdvertisements(address="FF:FF:FF:FF:FF:FF")
 			self.receiver.onEvent("*", callback=self.onAdvertisement)
-			self.loop()
+
+			remainingTime = self.scanningTime
+			while remainingTime != 0:
+				utils.wait(seconds=1)
+				remainingTime -= 1
+				if (self._dirty):
+					self.deviceCallback(self.devices)
+					self._dirty = False
+
 			# stop listening for advertisements
 			self.receiver.setSweepingMode(enable=False)
 			self.receiver.removeCallbacks()
@@ -143,7 +149,13 @@ class ble_locate(module.WirelessModule):
 		if scanConn:
 			io.info('Scanning for existing connections')
 			self.receiver.scanExistingConnections(onConnection=self.onConnectionFound, resetState=self.args['SCAN_TYPE'] == 'all')
-			self.loop()
+			remainingTime = self.scanningTime
+			while remainingTime != 0:
+				utils.wait(seconds=1)
+				remainingTime -= 1
+				if (self._dirty):
+					self.connectionCallback(self.connections)
+					self._dirty = False
 
 		return self.ok({
 			'devices': self.devices,

@@ -9,6 +9,8 @@ from mock import mockMaster, mockSlave
 if __name__ == '__main__':
     try:
         mainApp = app.App(homeDir=utils.initializeHomeDir())
+        mainApp.debug = True
+        mainApp.start()
         
         masterTask = utils.addTask(mockMaster)
         slaveTask = utils.addTask(mockSlave)

@@ -1,10 +1,38 @@
 !(function () {
 
+    let $radar
+    function onRadarCreation($el) {
+        $radar = $el
+    }
+
+    function onLogsUpdate($el) {
+        // scroll to bottom of logs list
+        $el.scrollTop = $el.scrollHeight;
+    }
+
     const html = htm.bind(h)
 
     const state = {
         logs: [],
-        devices: [],
+        devices: [{
+            type: 'ADV_IND',
+            address: '00:45:23:53:43:64',
+            name: 'test',
+            company: 'John',
+            flags: ['adv', 'brd', 'Discoverable over BD/EDR'],
+            rssi: -56,
+            txPower: -24,
+            distance: 0.45
+        }, {
+            type: 'SCAN_RSP',
+            address: '00:FF:FF:FF:FF:FF',
+            name: 'iphone',
+            company: 'Apple',
+            flags: ['adv', 'brd'],
+            rssi: -67,
+            txPower: -47,
+            distance: 0.78
+        }],
         connections: [],
         attack: null,
         target: null
@@ -30,6 +58,10 @@
             connections
         }),
 
+        attackFinished: () => ({
+            attack: null
+        }),
+
         /**
          * server requests
          */
@@ -44,31 +76,63 @@
         }
     }
 
+    const colors = '#2980b9,#f1c40f,#1abc9c,#8e44ad,#34495e'.split(',')
+
     const view = (state, actions) => {
-        deviceHdr = 'addres,name,company,flags,rssi,txPower,distance,spoofing'.split(',')
+        deviceHdr = 'addres,type,name,company,flags,rssi,txPower,distance,spoofing'.split(',')
         connectionHdr = 'accessAddress,rssi'.split(',')
 
+        let positions = []
+        if ($radar && state.devices.length) {
+            const padding = 20
+            const mapSize = Math.min($radar.offsetWidth, $radar.offsetHeight) - padding
+            const descDistances = state.devices.sort((a, b) => b.distance - a.distance)
+            const maxRange = descDistances[0].distance
+
+            positions = descDistances.map(({ distance, color = 'red' }, i) => {
+                const size = `${distance / maxRange * mapSize}px`
+                return html`
+                    <div class="position" style=${{'z-index': i + 1, 'width': size, 'height': size, background: colors[i]}}></div>
+                `
+            })
+        }
+        // this is our position
+        positions.push(
+            html`<div class="position" style=${{'z-index': state.devices.length + 1, 'width': '10px', 'height': '10px', background: 'black'}}></div>`
+        )
+        
         return html`
-            <main>
-                <div class="controls">
-                    <Control attack="scan" />
+            <main class="container">
+                <div class="content">
+                    <div class="controls">
+                        <Control attack="scan" />
+                    </div>
+                    <div class="radar" oncreate=${onRadarCreation}>
+                        ${positions}
+                    </div>
+                    <div class="logs">
+                        <h2>Logs</h2>
+                        <div class="messages" onupdate=${onLogsUpdate}>
+                        ${state.logs.map(({ type, message }, i) => html`
+                            <p class="message ${type}" key=${i}>${message}</p>
+                        `)}
+                        </div>
+                    </div>
                 </div>
+                <div class="lists">
+                    <div class="devices">
+                        <h2>Devices</h2>
+                        <List header=${deviceHdr}>
+                            ${state.devices.map(Device)}
+                        <//>
+                    </div>
 
-                <h2>Devices</h2>
-                <List header=${deviceHdr}>
-                    ${state.devices.map(Device)}
-                <//>
-
-                <h2>Connections</h2>
-                <List header=${connectionHdr}>
-                    ${state.connections.map(Connection)}
-                <//>
-
-                <h2>Logs</h2>
-                <div class="logs">
-                ${state.logs.map(({ type, message }, i) => html`
-                    <p class="log ${type}" key=${i}>${message}</p>
-                `)}
+                    <div class="connections">  
+                        <h2>Connections</h2>
+                        <List header=${connectionHdr}>
+                            ${state.connections.map(Connection)}
+                        <//>
+                    </div>
                 </div>
             </main>
         `
@@ -90,14 +154,16 @@
                 return {
                     onclick: () => {
                         actions.stopAttack({ attack, target })
-                    }
+                    },
+                    'class': 'control cancel'
                 }
             } else if (state.attack === null) {
                 // no attack currently executing
                 return {
                     onclick: () => {
                         actions.startAttack({ attack, target })
-                    }
+                    },
+                    'class': 'control start'
                 }
             } else {
                 // not concerned by the attack
@@ -111,7 +177,7 @@
             if (state.attack === attack) {
                 // current target mismatch, not target of the attack
                 if (target !== null && state.target !== target) {
-                    return attack
+                    return `Start ${attack}`
                 }
                 // attack and target matches
                 return `Stop ${attack}`
@@ -120,12 +186,13 @@
                 return `Start ${attack}`
             } else {
                 // not concerned by the attack
-                return attack
+                return `Start ${attack}`
             }
         }
 
+
         return html`
-            <button ... ${getAttributes()}>
+            <button class="control" ... ${getAttributes()}>
                 ${getWording()}
             </button>
         `
@@ -140,9 +207,10 @@
         h('tbody', {}, children)
     ])
 
-    const Device = ({ address, name, company, flags, rssi, txPower, distance }) => html`
-        <tr key=${address}>
+    const Device = ({ address, type, name, company, flags, rssi, txPower, distance }, i) => html`
+        <tr key=${address} style=${{background: colors[i]}}>
             <td>${address}</td>
+            <td>${type}</td>
             <td>${name}</td>
             <td>${company}</td>
             <td>${flags.join(', ')}</td>
@@ -170,8 +238,6 @@
 
     const main = app(state, actions, view, document.body)
 
-    window.main = main
-
     // Socket.IO
 
     const ws = io()
@@ -180,11 +246,6 @@
         main.log({
             type: 'success',
             message: 'Connected to server'
-        })
-
-        ws.emit('test', {
-            type: 'test',
-            data: 12
         })
     })
 
@@ -195,10 +256,12 @@
         })
     })
 
+    ws.on('attackFinished', main.attackFinished)
+
     ws.on('log', main.log)
 
-    ws.on('updateDevices', main.updateDevices)
+    ws.on('devicesUpdate', main.updateDevices)
 
-    ws.on('updateConnections', main.updateConnections)
+    ws.on('connectionsUpdate', main.updateConnections)
 
 })();
