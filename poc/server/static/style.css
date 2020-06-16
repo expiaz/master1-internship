@@ -51,6 +51,37 @@ body {
     transform: translate(-50%,-50%);
 }
 
+.position.origin {
+    width: 10px;
+    height: 10px;
+    background: black;
+}
+
+.radar .legend {
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 2px solid grey;
+}
+
+.legend > div {
+    display: flex;
+    flex-direction: row;
+}
+
+.legend .color {
+    width: 40px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.legend .distance {
+
+}
+
 .content .logs {
     margin-top: 25px;
     height: 50%;
@@ -94,6 +125,16 @@ body {
 
 .lists .devices {
     margin-bottom: 25px;
+    height: 50%;
+}
+
+.devices .devices-list, .connections .connections-list {
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.lists .connections {
+    height: 40%;
 }
 
 .lists table {

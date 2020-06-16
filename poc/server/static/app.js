@@ -10,28 +10,26 @@
         $el.scrollTop = $el.scrollHeight;
     }
 
+    function getText(attack) {
+        switch (attack) {
+            case 'scanDevice':
+                return 'scan devices'
+            case 'scanConnection':
+                return 'scan connections'
+            default:
+                return attack
+        }
+    }
+
     const html = htm.bind(h)
 
     const state = {
         logs: [],
         devices: [{
+            address: 'AA:AA:AA:AA:AA:AA',
             type: 'ADV_IND',
-            address: '00:45:23:53:43:64',
-            name: 'test',
-            company: 'John',
-            flags: ['adv', 'brd', 'Discoverable over BD/EDR'],
-            rssi: -56,
-            txPower: -24,
-            distance: 0.45
-        }, {
-            type: 'SCAN_RSP',
-            address: '00:FF:FF:FF:FF:FF',
-            name: 'iphone',
-            company: 'Apple',
-            flags: ['adv', 'brd'],
-            rssi: -67,
-            txPower: -47,
-            distance: 0.78
+            distance: 0.3,
+            color: '#d3f4c3'
         }],
         connections: [],
         attack: null,
@@ -58,8 +56,22 @@
             connections
         }),
 
-        attackFinished: () => ({
-            attack: null
+        attackStarted: ({ attack, target }) => state => ({
+            attack,
+            target,
+            ...actions.log({
+                'type': 'success',
+                'message': `${getText(attack)}${target ? `on ${target}` : ''} started`
+            })(state)
+        }),
+
+        attackStopped: () => state => ({
+            attack: null,
+            target: null,
+            ...actions.log({
+                'type': 'fail',
+                'message': `${getText(state.attack)}${state.target ? `on ${state.target}` : ''} stopped`
+            })(state)
         }),
 
         /**
@@ -68,19 +80,19 @@
 
         startAttack: ({ attack, target }) => {
             ws.emit('startAttack', { attack, target })
-            return { attack, target }
         },
         stopAttack: ({ attack, target }) => {
             ws.emit('stopAttack', { attack, target })
-            return { attack: null, target: null }
         }
     }
 
-    const colors = '#2980b9,#f1c40f,#1abc9c,#8e44ad,#34495e'.split(',')
+    window.actions = actions
 
     const view = (state, actions) => {
-        deviceHdr = 'addres,type,name,company,flags,rssi,txPower,distance,spoofing'.split(',')
-        connectionHdr = 'accessAddress,rssi'.split(',')
+        deviceHdr = 'address,type,name,company,flags,rssi,txPower,distance,attack'.split(',')
+        connectionHdr = 'accessAddress,rssi,attack'.split(',')
+
+        console.log(state)
 
         let positions = []
         if ($radar && state.devices.length) {
@@ -89,26 +101,25 @@
             const descDistances = state.devices.sort((a, b) => b.distance - a.distance)
             const maxRange = descDistances[0].distance
 
-            positions = descDistances.map(({ distance, color = 'red' }, i) => {
+            positions = descDistances.map(({ distance, color }, i) => {
                 const size = `${distance / maxRange * mapSize}px`
                 return html`
-                    <div class="position" style=${{'z-index': i + 1, 'width': size, 'height': size, background: colors[i]}}></div>
+                    <div class="position" style=${{ zIndex: i + 1, width: size, height: size, background: color}}></div>
                 `
             })
         }
-        // this is our position
-        positions.push(
-            html`<div class="position" style=${{'z-index': state.devices.length + 1, 'width': '10px', 'height': '10px', background: 'black'}}></div>`
-        )
         
         return html`
             <main class="container">
                 <div class="content">
                     <div class="controls">
-                        <Control attack="scan" />
+                        <Control attack="scanDevice" />
+                        <Control attack="scanConnection" />
                     </div>
                     <div class="radar" oncreate=${onRadarCreation}>
                         ${positions}
+                        <div class="position origin" style=${{zIndex: state.devices.length + 1}}></div>
+                        <Legend devices=${state.devices} />
                     </div>
                     <div class="logs">
                         <h2>Logs</h2>
@@ -122,16 +133,20 @@
                 <div class="lists">
                     <div class="devices">
                         <h2>Devices</h2>
-                        <List header=${deviceHdr}>
-                            ${state.devices.map(Device)}
-                        <//>
+                        <div class="devices-list">
+                            <List header=${deviceHdr}>
+                                ${state.devices.map(Device)}
+                            <//>
+                        </div>
                     </div>
 
                     <div class="connections">  
                         <h2>Connections</h2>
-                        <List header=${connectionHdr}>
-                            ${state.connections.map(Connection)}
-                        <//>
+                        <div class="connections-list">
+                            <List header=${connectionHdr}>
+                                ${state.connections.map(Connection)}
+                            <//>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -177,19 +192,18 @@
             if (state.attack === attack) {
                 // current target mismatch, not target of the attack
                 if (target !== null && state.target !== target) {
-                    return `Start ${attack}`
+                    return `Start ${getText(attack)}`
                 }
                 // attack and target matches
-                return `Stop ${attack}`
+                return `Stop ${getText(attack)}`
             } else if (state.attack === null) {
                 // no attack currently executing
-                return `Start ${attack}`
+                return `Start ${getText(attack)}`
             } else {
                 // not concerned by the attack
-                return `Start ${attack}`
+                return `Start ${getText(attack)}`
             }
         }
-
 
         return html`
             <button class="control" ... ${getAttributes()}>
@@ -207,17 +221,25 @@
         h('tbody', {}, children)
     ])
 
-    const Device = ({ address, type, name, company, flags, rssi, txPower, distance }, i) => html`
-        <tr key=${address} style=${{background: colors[i]}}>
+    function fmtDft(value, fmt = null, dft = '?') {
+        if (value) {
+            return fmt || value
+        } else {
+            return dft
+        }
+    }
+
+    const Device = ({ address, type, name, company, flags, rssi, txPower, distance, color }) => html`
+        <tr key=${address} style=${{background: color}}>
             <td>${address}</td>
             <td>${type}</td>
-            <td>${name}</td>
-            <td>${company}</td>
-            <td>${flags.join(', ')}</td>
-            <td>${rssi} dBm</td>
-            <td>${txPower} dBm</td>
-            <td>${distance} meters</td>
-            <td><Control attack="spoofing" target=${address} /></td>
+            <td>${fmtDft(name)}</td>
+            <td>${fmtDft(company)}</td>
+            <td>${fmtDft(flags, flags, 'None')}</td>
+            <td>${fmtDft(rssi, `${rssi} dBm`, '?')}</td>
+            <td>${fmtDft(txPower, `${txPower} dBm`, '?')}</td>
+            <td>${fmtDft(distance, `${distance} meters`, '?')}</td>
+            <td><Control attack="spoof" target=${address} /></td>
         </tr>
     `
 
@@ -229,14 +251,34 @@
         </tr>
     `
 
+    const Legend = ({ devices }) => {
+        const elligibleDevices = devices.filter(({ distance }) => !!distance)
+        if (elligibleDevices.length == 0)
+            return
+
+        return html`
+            <div class="legend" style=${{ zIndex: devices.length + 1 }}>
+            ${elligibleDevices.map(({ color, distance }) => html`
+                <div>
+                    <div class="color" style=${{ background: color }}></div>
+                    <div class="distance">${distance}m</div>
+                </div>
+            `)}
+            </div>
+        `
+    }
+
     htm.use([
         Control,
         List,
         Device,
-        Connection
+        Connection,
+        Legend
     ])
 
     const main = app(state, actions, view, document.body)
+
+    window.main = main
 
     // Socket.IO
 
@@ -256,7 +298,9 @@
         })
     })
 
-    ws.on('attackFinished', main.attackFinished)
+    ws.on('attackStarted', main.attackStarted)
+
+    ws.on('attackStopped', main.attackStopped)
 
     ws.on('log', main.log)
 

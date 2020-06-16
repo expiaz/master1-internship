@@ -11,10 +11,18 @@ index 4a867a5..92e53b9 100644
  		# Creation of the temporary directory
  		if not os.path.exists(self.tempDir):
 diff --git a/mirage/core/module.py b/mirage/core/module.py
-index fe9bcad..caf4d20 100644
+index fe9bcad..49b6236 100644
 --- a/mirage/core/module.py
 +++ b/mirage/core/module.py
-@@ -182,9 +182,11 @@ class Module:
+@@ -115,6 +115,7 @@ class Module:
+ 		except EOFError:
+ 			self.postrun()
+ 			raise EOFError
++
+ 	def info(self):
+ 		'''
+ 		This method is an helper allowing to generate a dictionary including some useful informations about the module.
+@@ -182,9 +183,11 @@ class Module:
  				current = scenarios.__scenarios__[self.args["SCENARIO"]]
  				if hasattr(current,self.args["SCENARIO"]):
  					scenarioClass = getattr(current,self.args["SCENARIO"])
@@ -185,19 +193,6 @@ index c531745..4369dd4 100644
  			self.customMirageFirmware = False
  			self.receptionBuffer = b""
  			self.lock = Lock()
-diff --git a/mirage/libs/ble_utils/packets.py b/mirage/libs/ble_utils/packets.py
-index a7f8bf3..05080a7 100644
---- a/mirage/libs/ble_utils/packets.py
-+++ b/mirage/libs/ble_utils/packets.py
-@@ -265,7 +265,7 @@ class BLEAdvertisement(BLEPacket):
- 	def toString(self):
- 		return "<< "+self.name+" | type="+self.type+" | addr="+self.addr+" | data="+self.getRawDatas().hex()+" >>"
- 
--class BLEAdvInd(BLEAdvertisement):
-+class BLEAdvInd():
- 	'''
- 	Mirage Bluetooth Low Energy Packet - ADV_IND
- 	
 diff --git a/mirage/libs/ble_utils/pcap.py b/mirage/libs/ble_utils/pcap.py
 index 4b6dc5f..798b23d 100644
 --- a/mirage/libs/ble_utils/pcap.py
@@ -323,6 +318,18 @@ index af8b3c1..e311c8d 100644
  def exitMirage():
  	'''
  	This function exits Mirage.
+diff --git a/mirage/libs/wireless_utils/packetQueue.py b/mirage/libs/wireless_utils/packetQueue.py
+index 5c9ac72..0b1d0de 100644
+--- a/mirage/libs/wireless_utils/packetQueue.py
++++ b/mirage/libs/wireless_utils/packetQueue.py
+@@ -19,6 +19,7 @@ class StoppableThread(threading.Thread):
+ 				self._target(*(self._args))
+ 		except (KeyboardInterrupt,EOFError):
+ 			pass
++
+ 	def stop(self):
+ 		'''
+ 		This method stops the thread.
 diff --git a/mirage/libs/wireless_utils/pcapDevice.py b/mirage/libs/wireless_utils/pcapDevice.py
 index 2c4bccc..b8b6269 100644
 --- a/mirage/libs/wireless_utils/pcapDevice.py
@@ -444,6 +451,18 @@ index 00d8735..932f874 100644
  
  				if m.execute()["success"]:
  					self.updatePrompt(target)
+diff --git a/mirage/modules/ble_scan.py b/mirage/modules/ble_scan.py
+index 214f729..488acbc 100644
+--- a/mirage/modules/ble_scan.py
++++ b/mirage/modules/ble_scan.py
+@@ -134,6 +134,7 @@ class ble_scan(module.WirelessModule):
+ 			while time != 0:
+ 				utils.wait(seconds=1)
+ 				time -= 1
++				print('scan')
+ 				self.updateDevices()
+ 			self.receiver.setScan(enable=False)
+ 			return self.generateOutput()
 diff --git a/mirage/modules/ble_sniff.py b/mirage/modules/ble_sniff.py
 index e360ab8..ec10dcb 100644
 --- a/mirage/modules/ble_sniff.py

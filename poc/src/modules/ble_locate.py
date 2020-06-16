@@ -42,7 +42,6 @@ class ble_locate(module.WirelessModule):
 
 	def onAdvertisement(self, packet):
 		if isinstance(packet, ble.BLEAdvertisement) and hasattr(packet, 'additionalInformations'):
-			io.displayPacket(packet)
 			type = packet.type
 			address = packet.addr
 			rssi = packet.additionalInformations.rssi
@@ -75,7 +74,7 @@ class ble_locate(module.WirelessModule):
 					'type': type,
 					'name': localName,
 					'company': company,
-					'flags': flags,
+					'flags': ', '.join(flags),
 					'txPower': txPower,
 					'rssi': rssi,
 					'distance': self.approximateDistance(rssi, txPower)
