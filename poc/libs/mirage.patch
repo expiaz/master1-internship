@@ -64,7 +64,7 @@ index 89e53ec..64b3cb9 100644
  									rssi = packet.rssi_avg,
  									rssi_count = packet.rssi_count,
 diff --git a/mirage/libs/ble_utils/btlejack.py b/mirage/libs/ble_utils/btlejack.py
-index c531745..4369dd4 100644
+index c531745..11b18e4 100644
 --- a/mirage/libs/ble_utils/btlejack.py
 +++ b/mirage/libs/ble_utils/btlejack.py
 @@ -54,6 +54,7 @@ class BTLEJackDevice(wireless.Device):
@@ -84,15 +84,7 @@ index c531745..4369dd4 100644
  			'/dev/ttyACM0'
  			>>> BTLEJackDevice.findMicrobits()
  			['/dev/ttyACM0','/dev/ttyACM1']
-@@ -387,6 +388,7 @@ class BTLEJackDevice(wireless.Device):
- 		return (pkt.major,pkt.minor)
- 
- 	def _reset(self):
-+		print('btlejack reset')
- 		self._internalCommand(BTLEJack_Reset_Command())
- 
- 	def getFirmwareVersion(self):
-@@ -527,6 +529,25 @@ class BTLEJackDevice(wireless.Device):
+@@ -527,6 +528,23 @@ class BTLEJackDevice(wireless.Device):
  					self._setChannelMap(channelMap)
  					self._recoverFromChannelMap(accessAddress,crcInit, channelMap)
  
@@ -107,18 +99,16 @@ index c531745..4369dd4 100644
 +		if callable(onConnection):
 +			self.onConnectionScanned = onConnection
 +		response = self._internalCommand(BTLEJack_Scan_Connections_Command())
-+		print('scanConn response {} : {}'.format(response.packet_type, response.notification_type if response.packet_type == 0x4 else response.opcode))
 +		# remove queued notifications and responses from previous executions
 +		if resetState:
 +			self._flush()
 +			self._flushCommandResponses()
-+		return self.candidateAccessAddresses
 +
 +
  	def _resetFilteringPolicy(self,policyType="blacklist"):
  		policy = 0x00 if policyType == "blacklist" else 0x01
  		self._internalCommand(BTLEJack_Advertisements_Command()/BTLEJack_Advertisements_Reset_Policy_Command(policy_type=policy))
-@@ -712,7 +733,7 @@ class BTLEJackDevice(wireless.Device):
+@@ -712,7 +730,7 @@ class BTLEJackDevice(wireless.Device):
  			self.candidateAccessAddresses[accessAddress]["hits"] += 1
  			self.candidateAccessAddresses[accessAddress]["channels"].add(channel)
  
@@ -127,7 +117,7 @@ index c531745..4369dd4 100644
  			io.success("Access Address selected : "+"0x{:08x}".format(accessAddress))
  			self._setAccessAddress(accessAddress)
  			self._recoverFromAccessAddress(accessAddress=accessAddress)
-@@ -734,7 +755,6 @@ class BTLEJackDevice(wireless.Device):
+@@ -734,7 +752,6 @@ class BTLEJackDevice(wireless.Device):
  			if len(self.receptionBuffer) >= 4:
  				size = struct.unpack('<H',self.receptionBuffer[2:4])[0]
  				if len(self.receptionBuffer) >= size + 5:
@@ -135,7 +125,7 @@ index c531745..4369dd4 100644
  					pkt = BTLEJack_Hdr(self.receptionBuffer[:size+5])
  					self.receptionBuffer = self.receptionBuffer[size+5:]
  					return pkt
-@@ -925,16 +945,20 @@ class BTLEJackDevice(wireless.Device):
+@@ -925,16 +942,20 @@ class BTLEJackDevice(wireless.Device):
  		pkt = self._recv()
  		self._exitListening()
  		if pkt is not None:
@@ -162,7 +152,7 @@ index c531745..4369dd4 100644
  				
  				if pkt.crc_ok != 0x01 and self.crcEnabled:
  					return None
-@@ -948,9 +972,10 @@ class BTLEJackDevice(wireless.Device):
+@@ -948,9 +969,10 @@ class BTLEJackDevice(wireless.Device):
  						rssi_avg=-pkt.rssi,
  						rssi_count=1)/BTLE()/BTLE_ADV(pkt.ble_payload)
  			if BTLEJack_Access_Address_Notification in pkt:
@@ -176,15 +166,52 @@ index c531745..4369dd4 100644
  			if BTLEJack_CRCInit_Notification in pkt:
  				self._updateCrcInit(crcInit=pkt.crc_init)
  			if BTLEJack_Channel_Map_Notification in pkt:
-@@ -1100,6 +1125,7 @@ class BTLEJackDevice(wireless.Device):
- 	def _stopSweepingThread(self):
- 		if self.sweepingThreadInstance is not None:
+@@ -1083,14 +1105,15 @@ class BTLEJackDevice(wireless.Device):
+ 
+ 
+ 	def _sweepingThread(self):
+-		for channel in self.sweepingSequence:
+-			self.setChannel(channel=channel)
+-			if self.sniffingMode is not None:
+-				if self.sniffingMode == BLESniffingMode.ADVERTISEMENT:
+-					self._internalCommand(BTLEJack_Advertisements_Command()/BTLEJack_Advertisements_Enable_Sniff_Command(channel=channel),noResponse=True)
+-				elif self.sniffingMode == BLESniffingMode.NEW_CONNECTION and not self.synchronized:
+-					self._sniffConnectionRequests(address=self.lastTarget,channel=channel)
+-			utils.wait(seconds=0.1)
++		channel = next(self.sweepingSequence)
++		self.setChannel(channel=channel)
++		if self.sniffingMode is not None:
++			if self.sniffingMode == BLESniffingMode.ADVERTISEMENT:
++				self._internalCommand(BTLEJack_Advertisements_Command()/BTLEJack_Advertisements_Enable_Sniff_Command(channel=channel),noResponse=True)
++			elif self.sniffingMode == BLESniffingMode.NEW_CONNECTION and not self.synchronized:
++				self._sniffConnectionRequests(address=self.lastTarget,channel=channel)
++		utils.wait(seconds=0.1)
++			
+ 
+ 	def _startSweepingThread(self):
+ 		self._stopSweepingThread()
+@@ -1102,6 +1125,11 @@ class BTLEJackDevice(wireless.Device):
  			self.sweepingThreadInstance.stop()
-+			self.sweepingThreadInstance.join()
  			self.sweepingThreadInstance = None
  
++	def _sweepingSequenceGenerator(self, sequence):
++		i = 0
++		while True:
++			yield sequence[i % len(sequence)]
++			i = i + 1
  
-@@ -1133,6 +1159,8 @@ class BTLEJackDevice(wireless.Device):
+ 	def setSweepingMode(self,enable=True,sequence=[37,38,39]):
+ 		'''
+@@ -1120,7 +1148,7 @@ class BTLEJackDevice(wireless.Device):
+ 		'''
+ 		self.sweepingMode = enable
+ 		if enable:
+-			self.sweepingSequence = sequence
++			self.sweepingSequence = self._sweepingSequenceGenerator(sequence)
+ 			self._startSweepingThread()
+ 		else:
+ 			self._stopSweepingThread()
+@@ -1133,6 +1161,8 @@ class BTLEJackDevice(wireless.Device):
  			self.isListening = False
  			self.hijacking = False
  			self.jamming = False
@@ -193,6 +220,15 @@ index c531745..4369dd4 100644
  			self.customMirageFirmware = False
  			self.receptionBuffer = b""
  			self.lock = Lock()
+@@ -1148,7 +1178,7 @@ class BTLEJackDevice(wireless.Device):
+ 			self.synchronized = False
+ 			self.jammingEnabled = True
+ 			self.sweepingMode = False
+-			self.sweepingSequence = []
++			self.sweepingSequence = None
+ 			self.sweepingThreadInstance = None
+ 			self.lastTarget = "FF:FF:FF:FF:FF:FF"
+ 			self.setScanInterval()
 diff --git a/mirage/libs/ble_utils/pcap.py b/mirage/libs/ble_utils/pcap.py
 index 4b6dc5f..798b23d 100644
 --- a/mirage/libs/ble_utils/pcap.py
@@ -451,18 +487,6 @@ index 00d8735..932f874 100644
  
  				if m.execute()["success"]:
  					self.updatePrompt(target)
-diff --git a/mirage/modules/ble_scan.py b/mirage/modules/ble_scan.py
-index 214f729..488acbc 100644
---- a/mirage/modules/ble_scan.py
-+++ b/mirage/modules/ble_scan.py
-@@ -134,6 +134,7 @@ class ble_scan(module.WirelessModule):
- 			while time != 0:
- 				utils.wait(seconds=1)
- 				time -= 1
-+				print('scan')
- 				self.updateDevices()
- 			self.receiver.setScan(enable=False)
- 			return self.generateOutput()
 diff --git a/mirage/modules/ble_sniff.py b/mirage/modules/ble_sniff.py
 index e360ab8..ec10dcb 100644
 --- a/mirage/modules/ble_sniff.py

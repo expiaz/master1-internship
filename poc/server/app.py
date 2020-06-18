@@ -9,6 +9,8 @@ from flask_socketio import SocketIO
 
 from mirage.core import app
 from mirage.libs import utils,ble
+from mirage.libs.wireless_utils.device import Device
+from mirage.core.module import WirelessModule
 
 server = Flask(__name__)
 socketio = SocketIO(server, async_mode='eventlet')
@@ -22,7 +24,7 @@ class State():
     @staticmethod
     def colorGenerator():
         i = 0
-        colorPalette = '#2980b9,#f1c40f,#1abc9c,#8e44ad,#34495e'.split(',')
+        colorPalette = '#2980b9,#f1c40f,#1abc9c,#8e44ad,#1289A7,#833471,#C4E538'.split(',')
         while True:
             yield colorPalette[i % len(colorPalette)]
             i = i + 1
@@ -84,6 +86,7 @@ def startAttack(payload):
             m = utils.loadModule('ble_locate')
             m['DEVICE_CALLBACK'] = onDeviceFound
             m['SCAN_TYPE'] = 'devices'
+            m['WINDOW'] = '50'
             m['TIME'] = ''
             m.execute()
         
@@ -100,6 +103,7 @@ def startAttack(payload):
             m = utils.loadModule('ble_locate')
             m['CONNECTION_CALLBACK'] = onConnectionFound
             m['SCAN_TYPE'] = 'connections'
+            m['WINDOW'] = '1'
             m['TIME'] = ''
             m.execute()
 
@@ -111,13 +115,17 @@ def startAttack(payload):
 
 @socketio.on('stopAttack')
 def stopAttack(payload):
+    socketio.emit('attackStopped')
     # never trust user input
     if state.task == None:
         return
     state.mirage.exit()
+    state.mirage = None
     state.task.kill()
     state.task = None
-    socketio.emit('attackStopped')
+    Device.instances = {}
+    WirelessModule.Emitters = {}
+    WirelessModule.Receivers = {}
 
 '''
 ' MAIN

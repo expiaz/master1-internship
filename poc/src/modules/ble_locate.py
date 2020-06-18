@@ -14,7 +14,7 @@ class ble_locate(module.WirelessModule):
 			'TIME': '5',
 			'DEVICE_CALLBACK': None,
 			'CONNECTION_CALLBACK': None,
-			'WINDOW': '5',
+			'WINDOW': '20',
 			'SCAN_TYPE': 'all'
 		}
 		self.dependencies = []
@@ -87,17 +87,18 @@ class ble_locate(module.WirelessModule):
 			self.connections[accessAddress] = {
 				'address': accessAddress,
 				'rssi': rssi,
-				'channels': set([channel])
+				'channels': set([channel]),
+				'hits': 1
 			}
 			self.values[accessAddress] = deque(maxlen=self.windowSize)
 			self._dirty = True
 		else:
+			self.connections[accessAddress]['hits'] += 1
 			self.connections[accessAddress]['channels'].add(channel)
 			self.values[accessAddress].append(rssi)
 			avg_rssi = round(sum(self.values[address]) / len(self.values[address]))
-			if self.connections[accessAddress]['rssi'] != avg_rssi:
-				self.connections[accessAddress]['rssi'] = avg_rssi
-				self._dirty = True
+			self.connections[accessAddress]['rssi'] = avg_rssi
+			self._dirty = True
 
 	def display(self, data):
 		devices = self.devices

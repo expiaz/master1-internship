@@ -25,12 +25,7 @@
 
     const state = {
         logs: [],
-        devices: [{
-            address: 'AA:AA:AA:AA:AA:AA',
-            type: 'ADV_IND',
-            distance: 0.3,
-            color: '#d3f4c3'
-        }],
+        devices: [],
         connections: [],
         attack: null,
         target: null
@@ -61,7 +56,7 @@
             target,
             ...actions.log({
                 'type': 'success',
-                'message': `${getText(attack)}${target ? `on ${target}` : ''} started`
+                'message': `${getText(attack)}${target ? ` on ${target}` : ''} started`
             })(state)
         }),
 
@@ -70,7 +65,7 @@
             target: null,
             ...actions.log({
                 'type': 'fail',
-                'message': `${getText(state.attack)}${state.target ? `on ${state.target}` : ''} stopped`
+                'message': `${getText(state.attack)}${state.target ? ` on ${state.target}` : ''} stopped`
             })(state)
         }),
 
@@ -86,13 +81,9 @@
         }
     }
 
-    window.actions = actions
-
     const view = (state, actions) => {
         deviceHdr = 'address,type,name,company,flags,rssi,txPower,distance,attack'.split(',')
-        connectionHdr = 'accessAddress,rssi,attack'.split(',')
-
-        console.log(state)
+        connectionHdr = 'accessAddress,channels,rssi,times seen,attack'.split(',')
 
         let positions = []
         if ($radar && state.devices.length) {
@@ -169,6 +160,8 @@
                 return {
                     onclick: () => {
                         actions.stopAttack({ attack, target })
+                        // if (attack == 'scanConnection')
+                        //    clearTimeout(fakeScanConnTimer)
                     },
                     'class': 'control cancel'
                 }
@@ -177,6 +170,8 @@
                 return {
                     onclick: () => {
                         actions.startAttack({ attack, target })
+                        // if (attack == 'scanConnection')
+                        //    fakeScanConnTimer = setTimeout(fakeScanConn, 1000)
                     },
                     'class': 'control start'
                 }
@@ -243,10 +238,12 @@
         </tr>
     `
 
-    const Connection = ({ accessAddress, rssi }) => html`
+    const Connection = ({ accessAddress, rssi, channels, hits }) => html`
         <tr key=${accessAddress}>
             <td>${accessAddress}</td>
+            <td>${channels.join(', ')}</td>
             <td>${rssi} dBm</td>
+            <td>${hits}</td>
             <td><Control attack="hijack" target=${accessAddress} /></td>
         </tr>
     `
@@ -278,7 +275,24 @@
 
     const main = app(state, actions, view, document.body)
 
-    window.main = main
+    /*
+    let fakeScanConnTimer
+    let fakeHits = 0
+    let fakeChannels = new Set()
+    const fakeScanConn = () => {
+        fakeChannels.add(Math.round(Math.random() * 36))
+        fakeHits++
+        main.updateConnections([{
+            accessAddress: '0x8e89bed6',
+            rssi: -56 - Math.round(Math.random() * 10),
+            hits: fakeHits,
+            channels: [...fakeChannels]
+        }])
+
+        //clearTimeout(fakeScanConnTimer)
+        fakeScanConnTimer = setTimeout(fakeScanConn, Math.round(Math.random() * 5) * 1000)
+    }
+    */
 
     // Socket.IO
 
