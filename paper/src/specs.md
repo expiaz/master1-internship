@@ -1,26 +1,27 @@
 
-# Spécifications
+# Preuve de concept
 
-Sujet: Mettre en place des attaques sur le protocole *Bluetooth Low Energy* (Bluetooth Smart)
+Sujet: Étudier puis mettre en place des attaques sur le protocole *Bluetooth Low Energy* (Bluetooth Smart)
 
-Target: BLE 4.0 dit legacy pas de LESC avec methode d'appairage JustWorks
-Pourquoi 4.0 ?
-- Car 4.2 LESC ECCDH bcp plus difficile a craquer et bcp moins d'outils pour le faire
-- beaucoup d'appareils sont encore en 4.0 legacy ou meme sans pairing
-Pourquoi JustWorks ?
-- target IOT donc objets simples et peu chers (capteurs) n'embarquant pas d'autres moyens d'auth
+Le but est d'exposer puis abuser des failles dans le protocole BLE 4.0 (première version). Ces failles sont connues et ont pour la plupart été corrigées dans les version ultérieures du protocole (aujourd'hui en version 5.1). Neanmoins cela permet d'etudier et comprendre les mecanismes du BLE depuis sa creation, puis voir les alternatives qui ont etes proposees pour mitigees ces attaques.  
+Je ne cible que les appareils supportant l'appairage en BLE 4.0 (dit *legacy*) avec méthode d'appairage *JustWorks*. C'est le niveau de sécurité minimal prit en charge par le protocole et très répandue dans les appareils connectés. La majeure partie des appareils connectés sont simples, ne realisant qu'une fonction d'augmentation, ne disposant pas de clavier ou d'écran et ne permettent pas ainsi l'utilisation de méthode d'appairage autre que *JustWorks*.  
+Les mecanisme proposees a partir de la version 4.2 du BLE sont beaucoup plus robustes. Ils apportent les connexion securisee (LE Secure Connections ou LESC) se basant sur Diffie Hellmann pour l'echange de clefs ainsi qu'une nouvelle methode d'appairage authentifiée (Comparaison numerique).
 
-Meme si mecanisme securite offert par BLE avec appairage niveau lien, bcp de constructeur utilisent mecansimes custom niveau application bases sur les standard de crypto (AES) et methodes comme challenge-response. Clef flashee dans l'appareil BLE et distribuee au controller via un serveur distant par une application mobile lors de la creation de compte/identification de l'appareil BLE pour la premiere fois.  
+Meme si le BLE a toujours proposé des mesures de securité, la majorite des constructeurs ne les utilisent pas et mettent en place des chiffrements au niveau de la couche application (la ou le BLE chiffre depuis la couche lien).  
+Ces mesures de securité proprietaires sont souvent basees sur des algorithmes reconnus comme AES et des methodes comme le *challenge-response* pour authentifier un appareil. Une clef unique est integrée dans chaque appareil, celle-ci sera soit distribuee au proprietaire de l'appareil lors de la creation du compte ou le telechargement de l'application associee, soit gardee par le constructeur qui transmettra directement les commandes de l'utilisateur a l'appareil (via l'application ou directement si l'appareil est connecté au reseau mondial).  
+Ces mecanismes exposent cependant beaucoup plus d'informations que le chiffrement BLE depuis la couche lien. Les requetes ATT et GATT transittent en clair et pour pallier a la fuite d'informations les constructeurs evitent les requetes standardisee danas le BLE et preferent utiliser des protocoles personnalisés dans la couche application, celle-ci étant chiffrée.  
+Ces chiffrements proprietaires sur la couche application sont hors de portee de mon sujet mais ont fait couler beaucoup d'encre et plusieurs presentation et leurs *whitepaper* sont disponibles.
 
-Appareil transportable d'attaques sur les appareils BLE nearby
-ex: Raspi avec dongles et/ou sniffer BLE (BBC Micro) faisant tourner container DOcker avec le Poc dessus
+Maintenant il s'avere que beaucoup d'appareils autonomes simples ne mettent en place aucune mesure de securite, qu'elle soit standardisee ou proprietaire, car les donnees qui transittent ne sont pas jugees sensibles. C'est notamment le cas des objets domotiques autonomes comme les telecommandes pour lampes dites connectées.
 
-## Fonctionnalites
+## Travail demandé
 
-- Inventaire ..
-- ...
-- ...
-- ...
+Mettre en place un outil basé sur un framework offsenf permettant de répertorier et faciliter l'analyse des appareils et connexion BLE alentours. Cet outil est facilement portable sur diverses cartes de developpement comme la raspberry Pi car conteneurisé avec *Docker* et se basant sur du materiel USB pour l'etude du protocole (dongle et sniffer).  
+3 ports USB suffisent pour permettre de conduire toutes les attaques proposées par le framwork offensif utilisé (Mirage): 2 dongles USB BLE 4.0 et une carte BBC Micro:bit.  
+Le projet suppose la mise en place de 3 attaques dont une nouvelle non integrée a Mirage:
+- Inventaire des appareils et connexions a proximité + localisation des appareils (*scan*)
+- Usurpation et mise en place d'un *Man In The Middle* sur un appareil selectionné (*spoofing*)
+- Synchronisation puis detournement par brouillage d'une connexion precedement identifiée (*hijacking*)
 
 ## Architecture
 
@@ -28,101 +29,17 @@ serveur flask + websockets
 application js (hyperapp) + socketio
 framework offensif Mirage (python) + bindings custom pour communication API et non CLI
 
-## Interface
-
-GUI web HTML + JS
-
-## Tests
-
-Mock reseau BLE avec outils mirage slave + master
-
-## Fonctionnalités
-
-La preuve de concept devra fournir plusieurs fonctionnalités offensive décritent ci-après.
-
-<!-- TODO diagramme de controle algo ? -->
-
-### Repérage
-
-Inventaire des appareils et connexions BLE à proximité.
-
-- Écoute des annonces sur les 3 canaux publicitaires pour récupérer les appareils émetteurs.
-- Écoute des communications sur les 37 canaux de données pour répertorier celles active.
-
-### Localisation
-
-Localisation des appareils BLE alentours.
-
-- Écoute passive des annonces pour extraire le calibrage du signal et calculer la distance à partir de la puissance du signal reçu.
-- Si le calibrage n'est pas émit dans l'annonce, établissment d'une connexion pour récuperer la valeur si disponible.
-
-Opération répétables autant de fois que voulu pour améliorer la précision de la localisation (minimum 3 mesures pour une position).
-
-### Identification
-
-Connexion directe à un appareil via son adresse bluetooth pour extraire toutes les données exposées.
-
-- Écoute optionnelle des annonces pour identifier un esclave cible.
-- Requête de connexion à la cible en tant que maître.
-- Récupération des informations standardisées (GAP/GATT) ainsi que services et attributs propriétaires.
-
-### Interception
-
-Interception de communications et possible déchiffrement des trames.
-
-- Écoute des communications sur les 37 canaux de données.
-- Récupération de l'adresse d'accès et des paramètres d'appairage (carte des canaux, temps et nombre de sauts, etc).
-- Synchronisation avec la communication et écoute des trames.
-- Si la communication est chiffrée et la phase d'appairage passée, déconnexion des appareils via brouillage des communication jusqu'au temps mort.
-- Écoute des canaux d'annonce: attente d'un appairage en supposant qu'il provienne des appareils precedement déconnectés.
-- Récupération des informations cryptographique pour déchiffrer la connexion seulement si celle-ci n'utilise pas une clef a long terme deja établie ou une connexion securisée (BLE 4.2).
-- Écoute des communications et déchiffrement des trames à la volée.
-
-### Modification
-
-Attaque *man in the middle* par clonage et usurpation d'un appareil BLE pour modifier les données echangées.
-
-- Écoute passive des annonces de l'esclave cible de l'usurpation pour retransmission ultérieur et récupération de l'adresse bluetooth.
-- Connexion à l'esclave cible d'usurpation pour qu'il n'émette plus d'annonces.
-- Changement de l'adresse de l'usurpateur en celle de l'esclave usurpé et réémission des annonces précédement capturées.
-- Attente de la connexion du maître.
-- Appairage entre l'usurpateur et le maître.
-- Retransmission des communications entre le maître et l'esclave par l'usurpateur.
-
-Il sera par la suite envisageable d'associer plusieurs fonctionnalités pour réaliser des scénarios différents. Ce peut être par exemple l'usurpation d'un appareil suite au brouillage lors de l'interception des communications entre 2 appareils.
-
-## Architecture
-
-Le système se compose d'un front-end fournissant une interface utilisateur affichant les appareils BLE et les actions possible ainsi qu'un back-end permettant la réalisation des actions implementées.  
-Le back-end se compose d'un service web (en violet sur @fig:poc-arch) pour communiquer avec le front-end, il transmet les requêtes au serveur (en rouge) qui se base sur un framework BLE offensif (en bleu) pour les traiter. Le framwork BLE offensif utilise plusieurs appareils BLE (en vert) pour mener à bien les attaques.  
-Le serveur orchestre les attaques même si il ne les implémentent pas lui-même.
-
 ![Architecture du système](img/poc-architecture.png){#fig:poc-arch width=85%}
 
 ## Interface
 
-On retrouve la carte des appareils et connexions identifiés avec leur distance et position estimée par rapport au système (voir @fig:poc-ui: zone rouge *Scan*).  
+But d'augmenter Mirage avec front-end pour demo et conduire attaques *type*
 
+Technologie JS *Elm* (react trop lourd mais meme principe)
+
+On retrouve la carte des appareils et connexions identifiés avec leur distance et position estimée par rapport au système (voir @fig:poc-ui: zone rouge *Scan*).  
 Pour chaque cible (appareil ou connexion), des attaques sont disponibles:
 - Récupération du profil ou modification des transimissions par usurpation pour un appareil BLE emettant des annonces (zone bleue *Devices*).
 - Déconnexion des appareils ou interception des communications entre deux appareils appairés (zone bleue *Connections*).
 
-Une troisieme section permet de suivre le déroulement de l'attaque chosie (zone verte *Action progress*). Celle-ci est découpée en phases, dès que la phase courante est terminée sans erreur (carré vert), la phase suivante est exécutée. Lorsqu'une phase échoue l'attaque s'arrête et le message d'erreur est affiché en dessous (carré rouge).
-
-![Interface du système](img/poc-interface-highlight.png){#fig:poc-ui width=85%}
-
-## Tests
-
-Il est possible de tester toutes les attaques en mettant en place un réseau BLE de test. Toutes les attaques ne ciblent jamais plus de 2 appareils BLE. Il est possible de reproduire les conditions attendues dans l'attaque en imitant un esclave et un maître BLE avec des requêtes et réponses préprogrammées. Sur chaque attaque demande des conditions de départ différentes, les appareils peuvent être en attente (émettant des annonces), en appairage ou connectés.  
-Une fois notre réseau test mis en place, l'attaque est executée sur celui-ci et les résultats obtenus comparés par rapport à ceux préprogrammés dans le test.
-
-Il est possible d'automatiser ces tests avec 5 appareils (4 dongles et 1 sniffer) branchés à la machine réalisant ceux-ci. Le sniffer réalise la plupart des tàches purement offensive, 2 dongles mettent en place le réseau test pendant que les 2 autres permettent l'usurpation d'identité.
-
-## Livrables
-
-Code source du système fonctionnel: comprend l'intégration de l'outils offensive, le serveur et client pour l'interface ainsi qu'un moyen de déployer le système (Docker).
-
-Documentation du système: rédigée en langage spécifique (markdown, rst) et déployable avec un outils (Sphinx, pandoc), documentation développeur pour mettre en place le système et documenter les choix techniques.
-
-Rapport de projet: rédigé avec un outils spécifique (LaTeX, pandoc), rendue au format PDF, comprend une étude du contexte, analyse de l'existant et de faisabilité puis mise en place de la preuve de concept.
-
+TODO Screen GUI HTML

@@ -139,3 +139,20 @@ Bindings websockets flask
 Bindings flask - Mirage (surcharge modules et steps pour log ?)
 Design front (integration & style)
 Implementation autres attaques
+
+# Semaine 10 - 15/06
+
+Intégration de Flask avec Mirage: creation d'une API pour interfacer le backend avec Mirage
+Mise en place des events websockets pour la communication front/back
+Integration radar front et changement du fonctionnement des controles
+Deplacement des attaques dans le CLI Mirage car redondance avec API/GUI en front
+Asynchronisation de l'API Mirage dans le backend pour garder la responsivité en front et etre notifieé lors de changements plutot qu'attendre la fin d'une attaque
+
+TODO:
+Attaques CLI Mirage Hijack/MITM
+Redaction attaques et tests/validation
+Redaction documentation
+Relecture rapport
+
+# Semaine 11 - 22/06
+

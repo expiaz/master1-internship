@@ -64,7 +64,7 @@ index 89e53ec..64b3cb9 100644
  									rssi = packet.rssi_avg,
  									rssi_count = packet.rssi_count,
 diff --git a/mirage/libs/ble_utils/btlejack.py b/mirage/libs/ble_utils/btlejack.py
-index c531745..11b18e4 100644
+index c531745..c32ad64 100644
 --- a/mirage/libs/ble_utils/btlejack.py
 +++ b/mirage/libs/ble_utils/btlejack.py
 @@ -54,6 +54,7 @@ class BTLEJackDevice(wireless.Device):
@@ -75,15 +75,6 @@ index c531745..11b18e4 100644
  			"sniffExistingConnections",
  			"sniffAdvertisements", 
  
-@@ -244,7 +245,7 @@ class BTLEJackDevice(wireless.Device):
- 
- 		:Example:
- 			
--			>>> BTLEJackDevice.findMicrobits(0)
-+			>>> BTLEJackDevice.findcapabilitiess(0)
- 			'/dev/ttyACM0'
- 			>>> BTLEJackDevice.findMicrobits()
- 			['/dev/ttyACM0','/dev/ttyACM1']
 @@ -527,6 +528,23 @@ class BTLEJackDevice(wireless.Device):
  					self._setChannelMap(channelMap)
  					self._recoverFromChannelMap(accessAddress,crcInit, channelMap)
