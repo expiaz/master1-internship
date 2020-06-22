@@ -1,0 +1,8 @@
+keyboard
+terminaltables
+pyusb
+pyserial
+pycryptodomex
+psutil
+scapy
+matplotlib

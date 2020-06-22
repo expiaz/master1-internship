@@ -6,6 +6,11 @@ html {
     box-sizing: border-box;
 }
 
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
 *,
 *:before,
 *:after {
@@ -21,19 +26,18 @@ body {
     font-family: Lato;
     font-weight: normal;
     color: #1a1a1a;
-    margin: 0;
-    padding: 0;
 }
 
 .container {
     display: flex;
     flex-direction: row;
-    width: 100vw;
-    height: 100vh;
+    width: 99vw;
+    height: 97vh;
 }
 
 .container h2 {
-    margin: 10px 0;
+    padding: 10px 0;
+    margin: 0;
 }
 
 .container .content {
@@ -48,7 +52,7 @@ body {
  */
 
 .content .controls {
-    margin-bottom: 25px;
+    padding-bottom: 25px;
 }
 
 .content .radar {
@@ -101,7 +105,7 @@ body {
 }
 
 .content .logs {
-    margin-top: 25px;
+    padding-top: 25px;
     height: 50%;
     display: flex;
     flex-direction: column;
@@ -142,8 +146,8 @@ body {
 }
 
 .lists .devices {
-    margin-bottom: 75px;
-    height: 50%;
+    padding-bottom: 75px;
+    height: 60%;
 }
 
 .devices .devices-list, .connections .connections-list {

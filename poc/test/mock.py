@@ -8,8 +8,8 @@ MOCK_VALUES = {
         'localName': 'Test slave'
     },
     'control': {
-        'number_requests': 100,
-        'request_time_interval': 1,
+        'number_requests': 10,
+        'request_time_interval': 3,
         'enable_pairing': True
     }
 }

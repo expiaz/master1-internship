@@ -3,7 +3,7 @@
 
 Le protocole a principalement été designé par Nokia pour répondre au besoin d'un protocole sans fil peu gourmand en énergie permettant la communication avec les péripheriques personnels (téléphone portable, montre, casque audio). Nommé *Wibree*, il a été intégré au standard Bluetooth sous le nom *Low Energy*.  
 Le Bluetooth ne comprend pas seulement un protocole mais une multitude d'entre eux (BR, EDR, HS) qui ont en commun de permettre la communication (et l'échange de données) sans fil avec des périphériques personnels. Ils font partit des protocoles *WPAN* et leur distance d'émission varie de quelques mètres jusqu'à 30 mètres.  
-La spécification Bluetooth 4.0, sortie en 2011, intégre le protocole LE (*Low Energy*) et permet au Bluetooth de toucher le marché des systèmes embarqués fonctionnants sur batterie.
+La spécification Bluetooth 4.0, sortie en 2010, intégre le protocole LE (*Low Energy*) et permet au Bluetooth de toucher le marché des systèmes embarqués fonctionnants sur batterie.
 
 ## Différences
 
@@ -102,47 +102,47 @@ En fonction des capacités et des exigences émises par chacun des appareils, un
 
 : Méthode d'appairage utilisée en fonction des capacités échangées^[https://www.bluetooth.com/blog/bluetooth-pairing-part-2-key-generation-methods/] {#tbl:ble-pairing-methods}
 
-Je m'intéresse principalement à la methode *JustWorks*. C'est la methode par défaut lorsque deux appareils ne disposent pas des capacités nécessaires pour une autre. Elle est notamment beacoup présente pour les objets connectés puisque n'intègrant pas de mécanismes pour un appairage plus complexe.  
-*Passkey* permet d'authentifier l'appairage pour se protéger des usurpations d'identité (*MITM*) puisque partageant un secret via l'utilisateur (ou un autre canal dans le cas du *OOB*). *JustWorks* ne permet pas d'authentifier les appareils et le chiffrement est moins robuste que les autres méthodes mais permet tout de même d'établir une communication chiffrée.  
+Je m'intéresse principalement à la methode *JustWorks*. C'est celle par défaut lorsque deux appareils ne disposent pas des capacités nécessaires pour une autre. Elle est notamment beacoup présente pour les objets connectés puisque n'intégrant pas de mécanismes pour un appairage plus complexe (claver ou écran).  
+*Passkey* permet d'authentifier l'appairage pour se protéger des usurpations d'identité (*Spoonfing* et *MITM*) puisque partageant un secret via l'utilisateur (ou un autre canal dans le cas du *OOB*). *JustWorks* ne permet pas d'authentifier les appareils et le chiffrement est moins robuste que les autres méthodes mais permet tout de même d'établir une communication chiffrée.  
 
-La méthode d'appairage choisie permet de transmettre un des matériaux cryptographique: la clef temporaire (ou *Temporary Key*). Cette phase est plus ou moins sensible à l'écoute passive en fonction de la méthode d'appairage et des exigences émises lors de l'échange des capacités.  
+La méthode d'appairage choisie permet de transmettre un des matériel cryptographique: la clef temporaire (*Temporary Key*). Cette phase est plus ou moins sensible à l'écoute passive en fonction de la méthode d'appairage et des exigences émises lors de l'échange des capacités.  
 *JustWorks* avec connexion BLE 4.0 (dite *legacy*) est le mode le plus sensible puisque la clef temporaire est tout simplement zéro, ne disposant pas de moyen de transmettre une donnée par autre voie, elle peut donc etre trouvee rapidement par *brute-force*.  
-La connexion *LE secure*, introduite à partir de la version 4.2, utilise l'algorithme Diffie-Hellman sur courbes elliptiques (*ECCDH*) pour l'echange des materiaux cryptographiques et est donc resistante a l'ecoute passive (*eavesdropping*) mais toujours vulnerables a l'usurptation d'identite (*MITM*) avec *JustWorks*.
+La connexion *LE secure*, introduite à partir de la version 4.2, utilise l'algorithme Diffie-Hellman sur courbes elliptiques (*ECCDH*) pour l'échange du matériel cryptographiques et est donc résistante à l'écoute passive (*eavesdropping*) mais toujours vulnérable à l'usurptation d'identité avec *JustWorks*.
 
-#### 5. Echange de clefs
+#### 5. Chiffrement
 
-L'etablissement du chiffrement de la connexion est ensuite realisé par derivation a partir d'une premiere clef temporaire transmise via la methode d'appairage choisie et des autres parametres cryptographiques echanges via le protocole BLE. La clef obtenue est dite court terme (*Short Term Key*) car elle ne sera utilisee que pour cette connexion et devra etre re-generee a chaque nouvelle connexion.  
-Il est cependant possible de mettre en place une session en stockant une clef partagée dite long term (*Long Term Key*) si cela a ete exigé lors de l'echange des capacités. La clef long terme (*LTK* pour *Long Term Key*) est stockée et associée à l'appareil communiquant pour rétablir une connexion future sans avoir à refaire une phase d'appairage.
+L'établissement du chiffrement de la connexion est ensuite réalisé par dérivation de la première clef temporaire transmise via la méthode d'appairage choisie et d'autres matériel cryptographique échangés via le protocole BLE. La clef obtenue est dite court terme (*Short Term Key*) car elle ne sera utilisée que pour cette connexion et devra être re-générée à chaque nouvelle connexion.  
+Il est cependant possible de mettre en place une session en stockant une clef partagée dite long term (*Long Term Key*) si cela à été exigé lors de l'échange des capacités. La clef long terme (*LTK*) est stockée et associée à l'appareil communiquant pour rétablir une connexion future sans avoir à refaire une phase d'appairage.
 
-A partir de la comprehension actuelle du protocole BLE et du fonctionnement de l'appairage, il semble recommandé de mettre en place une connexion securisee des que possible. Il est egalement necessaire d'eviter la methode *JustWorks* au maximum.  
-Cependant, il est assez simple de forger un echange de capacités pour retrograder la connexion en *legacy* et forcer *JustWorks* via les capacités echangees. C'est pourquoi certains appareils attendent des capacites et exigences minimales pour etablir une connexion, sans quoi celle-ci est avortee. C'est notamment le cas d'appareils proprietaires concus pour fonctionner ensemble.
+A partir de la comprehension actuelle du protocole BLE et du fonctionnement de l'appairage, il semble recommandé de mettre en place une connexion securisee des que possible. Il est également judicieux d'éviter la méthode *JustWorks* au maximum et stocker une session pour éviter de réitérer l'appairage.  
+Cependant, il est assez simple de forger un échange de capacités pour rétrograder la connexion en *legacy* et forcer *JustWorks* via les capacités échangées. C'est pourquoi certains appareils attendent des capacites et exigences minimales pour établir une connexion, sans quoi celle-ci est avortée. C'est notamment le cas d'appareils propriétaires conçus pour fonctionner ensemble.
 
 #### 6. Requêtes
 
-Les échanges sont realises sur la base d'une architecture client-serveur. Le *central* (client) interroge le *peripheral* (serveur) avec le protocole *ATT* (*ATTribute Protocole*). Chaque requete mene soit a une reponse du serveur soit a la mise en place d'une notification lors d'un evenemment (valeur changée ou disponible).  
-Les requetes et reponses possibles sont standardisées sous le *GATT* (*Generic ATTributes*) pour permettre une interoperabilité maximale entre les appareils (comme pour le *GAP*). *GATT* et *GAP* partagent les memes profiles, seul la structure change. Le serveur *GATT* peut etre interrogé pour etablir une liste exhaustive de toutes les fonctionnalites d'un appareil la ou le *GAP* choisit ce que contient l'annonce mais est limite par la taille du paquet (31 octets).
+Les échanges sont réalisés sur la base d'une architecture client-serveur. Le *central* (client) interroge le *peripheral* (serveur) avec le protocole *ATT* (*ATTribute Protocole*). Chaque requête mène soit à une réponse du serveur, soit à la mise en place d'une notification lors d'un évènemment (valeur changée ou disponible).  
+Les requêtes et réponses possibles sont standardisées dans le *GATT* (*Generic ATTributes*) pour permettre une interoperabilité maximale entre les appareils (comme pour le *GAP*). *GATT* et *GAP* partagent les mêmes profiles, seul la structure change. Le serveur *GATT* peut être interrogé pour établir une liste exhaustive de toutes les fonctionnalités d'un appareil la ou le *GAP* choisit ce que contient l'annonce mais est limité par la taille du paquet (31 octets).
 
 ### GAP
 
-Dans le cas des *Peripherals* et *Centrals*, le *GAP* est principalement utilisé pour etablir un profil de l'esclave permettant la decision de connexion de la part du maitre.  
-Pour les *Boardcasters* et *Observers* il permet la communication unidirectionnelle (*Broadcaster* vers *Observer*) via les annonces, ceux-ci utilisant la diffusion plutot qu'une connexion point a point. On retrouve cette utilisation pour les beacons publicitaires ou de localisation interieur.
+Dans le cas des *Peripherals* et *Centrals*, le *GAP* est principalement utilisé pour établir un profil du *peripheral* permettant la décision de connexion de la part du *central*.  
+Pour les *Boardcasters* et *Observers* il permet la communication unidirectionnelle (*Broadcaster* vers *Observer*) via les annonces, ceux-ci utilisant la diffusion plutôt qu'une connexion point à point. On retrouve cette utilisation pour les beacons publicitaires ou de localisation intérieur.
 
 ### GATT
 
-Pour l'echange de données lors de connexion point à point, le *GATT* est utilisé en mode client-serveur. L'architecture du serveur *GATT* est en entonnoir, la plus haute couche s'appelle un *service*, il encapsule des *caracteristiques*, chacune contenant une *valeur* et un ou plusieurs *descripteurs* fournissants des informations additionnelles sur la valeur (voir @fig:ble-gatt-arch).  
-A chacune de ses couches (service, caracteristique, valeur, descripteur) est attribué un identifiant unique appelé *handle*. La plage des indentifiant est partagée entre toutes les couches donc si un service a l'identifiant `0x01` aucun autre service/caracteristique/attribut/descripteur ne peut l'utiliser.
+Pour l'échange de données lors de connexion point à point, le *GATT* est utilisé en mode client-serveur. L'architecture du serveur *GATT* est en entonnoir, la plus haute couche s'appelle un *service*, il encapsule des *caractéristiques*, chacune contenant une *valeur* et un ou plusieurs *descripteurs* fournissants des informations additionnelles sur la valeur (voir @fig:ble-gatt-arch).  
+À chacune de ses couches (service, caracteristique, valeur, descripteur) est attribué un identifiant unique appelé *handle*. La plage des indentifiant est partagée entre toutes les couches donc si un service a l'identifiant `0x01` aucun autre service/caracteristique/attribut/descripteur ne peut l'utiliser.
 
-Un service correspond generalement a un profil (standardise ou non) comme par exemple un termometre. Ce service exposerait des caracteristiques comme la temperature, l'humidite ou autres. Chacune de ces caracateristique contient la valeur (donnée brute) et les descripteurs peuvent indiquer l'unité ou encore un facteur ou formule pour convertir la valeur donnée en resultat exploitable.
+Un service correspond generalement a un profil (standardisé ou non) comme par exemple un termomètre. Ce service exposerait des caracteristiques comme la température ou l'humidité. Chacune de ces caracatéristique contient la valeur (donnée brute) et des descripteurs pour indiquer l'unité ou encore un facteur ou formule pour convertir la valeur donnée en résultat exploitable.
 
-A moins de connaitre exactement l'appareil et de l'interroger en mode aveugle via les identifiants (ce qui peut etre le cas entre des appareils proprietaires), il faut proceder par etape en decouvrant d'abors les services disponibles, puis chaque caracteristique par service et enfin les attributs de celles-ci.  
-Pour proceder a cette decouverte d'un appareil, le protocole *ATT* dispose d'un type de requete par couche a interroger (voir @fig:ble-gatt-arch). Une fois le service voulu trouvé (ou la cartographie totale de l'appareil realisée), on peut lire, ecrire ou souscrire a des attributs directement par *handle*. Le *GATT* met en place un systeme de droits par attribut pour proteger la lecteur, l'ecriture et la souscription par le client.
+À moins de connaître exactement l'appareil et de l'interroger à l'aveugle via les *handles* (ce qui peut être le cas entre des appareils propriétaires), il faut procéder par étape en découvrant d'abors les services disponibles, puis chaque caractéristique par service et enfin les valeurs de celles-ci.  
+Pour procéder à la découverte d'un appareil, le protocole *ATT* dispose d'un type de requête par couche à interroger (voir @fig:ble-gatt-arch). Une fois le service voulu trouvé (ou la cartographie totale de l'appareil realisée), on peut lire, écrire ou souscrire à des attributs directement par *handle*. Le *GATT* met en place un système de droits par attribut pour protéger la lecteur, l'écriture et la souscription par le client.
 
-Le *GATT* définit egalemet des services standardisés appelé primaire et secondaires censés etres present sur tout les appareils BLE afin de connaitre les fonctionnalités standardisés (service primaire) et proprietaires (service secondaire) de l'appareil. Comme les *handle* sont definies arbitrairement par le serveur *GATT*, les profils standards et leurs services/caracteristiques sont identifiés par un *UUID* standardisé unique a travers tout les appareils BLE [^gatt-std-services].
+Le *GATT* définit égalemet des services standardisés appelés primaire et secondaire censés êtres présent sur tous les appareils BLE afin de connaître les fonctionnalités standardisées (service primaire) et propriétaires (service secondaire) de l'appareil. Comme les *handle* sont définies arbitrairement par le serveur *GATT*, les profils standards et leurs services/caractéristiques sont identifiés par un *UUID* standardisé identique dans tout les appareils BLE [^gatt-std-services].
 
 [^gatt-std-services]: https://www.bluetooth.com/specifications/gatt/services/
 
 ![Client et serveur GATT^[https://fr.mathworks.com/help/comm/examples/modeling-of-ble-devices-with-heart-rate-profile.html]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=70%}
 
-## Evolution
+## Évolution
 
-Depuis sa premiere iteration en 2011 dans la version `4.0` des specifications Bluetooth le BLE a evoluer pour integrer des mesures de securite avec l'ajout des connexions securisees LE en `4.2` puis la diversification des topologies avec l'introduction du *mesh* pour les reseaux de capteurs en `5.0` et dernierement l'amelioration de la localisation interieur (*Indoor Positionning System*) pour une precision de l'ordre du centimetre grace aux systemes angle d'arrivée et de depart (*AOA/AOD*).
+Depuis sa première itération en 2010 dans la version `4.0` des spécifications Bluetooth le BLE a évolué pour intégrer des mesures de sécurité avec l'ajout des connexions sécurisées *LE* en `4.2` puis la diversification des topologies avec l'introduction du *mesh* pour les réseaux de capteurs en `5.0` et dernièrement l'amélioration de la localisation intérieur (*Indoor Positionning System*) pour une précision de l'ordre du centimètre grâce aux systèmes angle d'arrivée et de départ (*AOA/AOD*).

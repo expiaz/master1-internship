@@ -10,9 +10,24 @@ class MockSlave(scenario.Scenario):
 
 	def onStart(self):
 		# Power Level between -100 and 20 dbm
-		self.txPwLvl = struct.pack('<b', MOCK_VALUES['gatt']['txPower'])
+		if "TXPOWER" in self.module.args and utils.integerArg(self.module.args['TXPOWER']) != None:
+			self.txPwLvl = struct.pack('<b', utils.integerArg(self.module.args['TXPOWER']))
+		else:
+			self.txPwLvl = struct.pack('<b', MOCK_VALUES['gatt']['txPower'])
+
 		# Local short name
-		self.shortName = MOCK_VALUES['gap']['localName']
+		if 'NAME' in self.module.args and self.module.args['NAME'] != '':
+			self.shortName = self.module.args['NAME'][0:10]
+		else:
+			self.shortName = MOCK_VALUES['gap']['localName']
+
+		if 'PAIRING' in self.module.args:
+			self.pairing = utils.booleanArg(self.module.args['PAIRING'])
+		else:
+			self.pairing = MOCK_VALUES['control']['enable_pairing']
+
+		if self.pairing:
+			self.module.pairing(active='passive')
 
 		self.addPrimaryService()
 		self.startAdv()
@@ -59,11 +74,6 @@ class MockSlave(scenario.Scenario):
 		self.module.emitter.setAdvertisingParameters(type='ADV_IND', data=advData)
 		self.module.emitter.setAdvertising(enable=True)
 		io.info('Currently advertising ' + advData.hex() + ' using ' + self.args['INTERFACE'])
-
-	def onMasterConnect(self, packet):
-		if MOCK_VALUES['control']['enable_pairing']:
-			self.module.pairing(active='passive')
-		return True
 
 	def onEnd(self):
 		return True

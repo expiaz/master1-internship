@@ -323,7 +323,7 @@ index 27d964b..d7d7a2b 100644
  
  def ask(prompt,default="",final=": "):
 diff --git a/mirage/libs/utils.py b/mirage/libs/utils.py
-index af8b3c1..e311c8d 100644
+index af8b3c1..6567a2d 100644
 --- a/mirage/libs/utils.py
 +++ b/mirage/libs/utils.py
 @@ -229,6 +229,18 @@ def loadModule(name):
@@ -345,6 +345,36 @@ index af8b3c1..e311c8d 100644
  def exitMirage():
  	'''
  	This function exits Mirage.
+@@ -334,7 +346,7 @@ def booleanArg(arg):
+ 	true = ["TRUE","YES","1"]
+ 	return arg.upper() in true
+ 
+-def integerArg(arg):
++def integerArg(arg, default=None):
+ 	'''
+ 	This function converts the provided string into an integer.
+ 	
+@@ -350,12 +362,18 @@ def integerArg(arg):
+ 		4660
+ 
+ 	'''
++	sign = 1
++	if len(arg) == 0:
++		return default
++	if arg[0] == '-':
++		arg = arg[1:]
++		sign = -1
+ 	if isNumber(arg):
+-		return int(arg)
++		return int(arg) * sign
+ 	elif isHexadecimal(arg):
+ 		return int(arg,16)
+ 	else:
+-		return None
++		return default
+ 
+ def listArg(arg):
+ 	'''
 diff --git a/mirage/libs/wireless_utils/packetQueue.py b/mirage/libs/wireless_utils/packetQueue.py
 index 5c9ac72..0b1d0de 100644
 --- a/mirage/libs/wireless_utils/packetQueue.py
@@ -457,10 +487,18 @@ index 07a81ca..a7c25d7 100644
  		uuid128 = service["uuid"].UUID128.hex() if service["uuid"].UUID128 is not None else ""
  		name = service["uuid"].name if service["uuid"].name is not None else ""
 diff --git a/mirage/modules/ble_master.py b/mirage/modules/ble_master.py
-index 00d8735..932f874 100644
+index 00d8735..f6ab8a3 100644
 --- a/mirage/modules/ble_master.py
 +++ b/mirage/modules/ble_master.py
-@@ -164,7 +164,7 @@ class ble_master(module.WirelessModule, interpreter.Interpreter):
+@@ -15,6 +15,7 @@ class ble_master(module.WirelessModule, interpreter.Interpreter):
+ 				"INTERFACE":"hci0",
+ 				"SCENARIO":""
+ 			}
++		self.dynamicArgs = True
+ 
+ 	def prerun(self):
+ 		interpreter.Interpreter.__init__(self)
+@@ -164,7 +165,7 @@ class ble_master(module.WirelessModule, interpreter.Interpreter):
  		else:
  			io.fail("Interface provided ("+str(self.args["INTERFACE"])+") is not able to scan devices.")
  	
@@ -469,7 +507,7 @@ index 00d8735..932f874 100644
  		if self.checkConnectionCapabilities():
  			target = self.args['TARGET'] if target=="" else target
  			connectionType = self.args['CONNECTION_TYPE'] if connectionType=="" else connectionType
-@@ -175,7 +175,7 @@ class ble_master(module.WirelessModule, interpreter.Interpreter):
+@@ -175,7 +176,7 @@ class ble_master(module.WirelessModule, interpreter.Interpreter):
  				m['TARGET'] = target
  				m['CONNECTION_TYPE'] = connectionType
  				m['INTERFACE'] = self.args['INTERFACE']

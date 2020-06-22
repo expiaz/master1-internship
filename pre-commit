@@ -11,13 +11,21 @@ if [ -d "$base/poc/libs/mirage" ]; then
 	# env -i executes the provided command in a new environment
 	env -i ./generate_patch.sh
 	git add mirage.patch
-	cd $base
+	cd "$base"
+fi
+
+if [ -d "$base/doc" ]; then
+	echo "Generating latest documentation version"
+	cd "$base/doc"
+	pandoc -d documentation.yaml -o documentation.pdf
+	git add documentation.pdf
+	cd "$base"
 fi
 
 if [ -d "$base/paper" ]; then
-	echo "Generating lastest paper version"
+	echo "Generating latest paper version"
 	cd "$base/paper"
-	pandoc -d pandoc.yaml -o paper.pdf
+	pandoc -d paper.yaml -o paper.pdf
 	git add paper.pdf
-	cd $base
+	cd "$base"
 fi

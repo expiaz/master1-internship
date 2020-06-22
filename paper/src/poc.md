@@ -14,9 +14,27 @@ Creation API pour integration avec Flask mais couches CLI et Modules fortements 
 Inutile et long de reconduire l'interface CLI de mirage en API pour le back, la rendre accessible depuis GUI via websockets puis la rendre en HTML/CSS/JS. Les attaques selectionnees demandent actions utilisateurs car modification a la volee d'informations, seul le scan et localisation sont autonomes. Decision de laisse le front pour demo localisation et scan pour sensibilisation fuite d'informations passive BLE (smartphones, airpods, pc).  
 Utilisation CLI Mirage avec modules personnalisés pour conduire les attaques choisies (et meme plus puisque mirage dispose d'une multitudes d'attaques).
 
-# Travail realise
+# Travail réalisé
 
-## Scan et localisation
+## Scan
+
+sniffer micro bit
+Repertorier les appareils BLE ainsi que connexion etablies a proximité
+Mecanisme d'annonces publique sur canaux 37,38,39, canaux de donnees scannable a la recherche de connexions
+Tout appareil BLE
+module ble_sniff modifié pour scanner indefiniement les connexion alentours
+Mitigation indirecte integree au protocole par le channel hopping et channel map
+Parametres de connexion personnalisé (channel map, channel hop and time), eviter les valeurs par défaut, ne pas emettres d'annonces inutiles
+
+## Localisation
+
+BBC MicroBit
+Localisation des appareils annoncant alentours avec RSSI et calibrage
+Standard iBeacon, fuite d'info GAP
+Appareils bureautique (smartphones, pc, ecouteurs etc), beacons pub
+Extraction rssi depuis firmware microbit, equation distance avec rssi et txpower lissé sur le temps pour reduire fluctuation
+Calibrage necessaire par la cible car BLE difference puissances emissions, seuil sensibilité micro bit base nRF51 +-6dbm, fluctuation rssi
+Reduire payload adv GAP, utiliser type ADV correspondant (pas adv_ind tout le temps), certains ne contiennent pas de payload
 
 1. comment trouver ?
 ble_sniff, scan 3 canaux d'annonces => devices
@@ -40,11 +58,60 @@ extension du ble_sniff et device btlejack pour integrer mes changements: but ne 
 
 ## MITM
 
+Deux dongles CSR4.0
+Clonage et usurpation du *peripheral* dans l'attente d'une connexion du *central* pour voir/modifier puis relayer le traffic.
+Appairage sans authentification, methode de chiffrement faible (crackle pour briser le chiffrement car acces connect req)
+Objets connectes autonomes
+Module mirage ble_mitm
+Etre au bon endroit au bon moment, *peripheral* non connecté et *central* intention de connexion, phase appairage presente (non bonding)
+Utilisation de methodes d'appairage authentifiee comme PassKey ou NumComp + utilisation connexion securisee LE + mise en place de session LTK
+
 ## Hijack
+
+Matos
+Fct
+Vulns abusees
+Cibles
+Implementation
+Difficultes
+Mitigations/protections
+
+Utilise MicroBit et CSR4.0
+Prendre place d'un appareil dans une connexion. Se base sur ecoute passive puis brouillage
+Pas d'appairage
+Capteurs/actionneurs (lampes)
+Module mirage ble_hijack
+Pas acces a phase de connexion ni d'appairage => demande recover parametres de connexion
+Mitigé par channel hopping, protegé par appairage
 
 ## Tests et validation
 
+scenarios sur ble-master et slave
+A partir de reseau de test mis en place avec Mirage mock master et slave avec 2 CSR4.0
 Connexion factice car aucun appareil BLE (coronavirus modification du sujet)
+
+Scan
+Connexion longue et incertaine
+
+Locate
+demande txpower pour localiser car calibrage BLE
+Valeurs +/-30cm, seuil sensibilité -45dBm to -70dBm dans les faits (-30 to -90 sur le papier)
+
+MITM
+Manque device pour test
+
+Hijack
+Longue et incertaine
+
+## Améliorations
+
+Scan / Hijack connexion
+parrallelisation de sniffers pour augmenter les chances de trouver les canaux de donnees utilises
+
+Locate
+best multiples antennes AOA/AOD pour augmentation de precision
+sinon avoir plus de points de mesures (min 3) avec RSSI
+ajouter des methodes d'amelioration precision RSSI (path loss modele, filtre kalmann ...)
 
 
 <!--

@@ -3,24 +3,27 @@ FROM ubuntu:18.04
 RUN apt-get update
 RUN apt-get install -y bluez bluetooth usbutils
 RUN apt-get install -y python3 python3-venv python3-pip
+# it can save your life... If you know how to escape from within (esc :wq)
 RUN apt-get install -y vim
+# server dependencies
+RUN pip3 install flask eventlet flask-socketio
 
 EXPOSE 5000
 
-# dev
 # we won't install mirage
 # because we will use mountpoints afterwards
 # to be able to edit the code locally
 # without having to rebuild the docker image
 
-RUN mkdir /poc && cd /poc
-COPY libs/mirage /poc/mirage
+# mirage dependencies
+WORKDIR /poc
+COPY libs/mirage-requirements.txt .
+RUN pip3 install -r mirage-requirements.txt
 
-RUN cd /poc/mirage && \
-    python3 setup.py egg_info && \
-    pip3 install -r mirage.egg-info/requires.txt
+#RUN python3 setup.py egg_info
+#RUN pip3 install -r mirage.egg-info/requires.txt
 
-RUN pip3 install flask eventlet flask-socketio
+RUN rm mirage-requirements.txt
 
-RUN rm -rf /poc && mkdir /poc
-
+# launch Flask server on localhost:5000
+#TODO CMD [ "python3", "server/app.py" ]

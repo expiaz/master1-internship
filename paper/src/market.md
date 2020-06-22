@@ -1,7 +1,3 @@
-Dans le cadre du master CSSE nous étudions l'internet des objets (*IoT*) et leurs aspects sécurité. Le protocole réseau sans fil Bluetooth Low Energy (BLE) permet une consommation réduite pour les objets fonctionnant sur batterie, visant notamment les objets connectés. Aujourd'hui integré dans la plupart des appareils de bureautique, il est rapidement devenu populaire dans l'internet des objets.
-
-La première itération du BLE (sortie en 2011) ne répond plus aux exigences de sécurité contemporaine et même si le protocole à su évoluer depuis pour répondre à ces besoins, beaucoup d'appareils utilisent encore la version originale n'intégrant pas ces mécanismes.  
-Ce sont pour la plupart des appareils conçus pour fonctionner sur batterie et communiquer en point à point. On va retrouver les capteurs corporels pour santé ou fitness mais également des mécanismes plus sensibles tels des cadenas ou serrures. Les communications (incluant parfois des données personnelles) peuvent êtres interceptées, voir modifiées pour permettre des actions aux dépends de l'utilisateur.
 
 # Objets connectés
 
@@ -22,4 +18,4 @@ Comme évoqué précédemment, beaucoup d'objets connectés ont profité des pro
 
 Avec la démocratisation des objets connectés de nouveaux protocoles spécialisés ont fait leur apparition. Même si le *BLE* (*Bluetooth Low Energy*) s'adapte pour répondre aux besoins de ce marché, il n'a été conçu pour les objets connectés mais les objets intelligents en permettant un contrôle par l'utilisateur.  
 Beaucoup de grands constructeurs (notamment Google et Apple) ont developpés leur standard, le vantant et l'imposant avec leurs produits et architectures propriétaires. *Apple Home* utilise *Darwin* (iOS, macOS) comme contrôleur ainsi que son propre protocole (*HAP*) pour ses objets connectés. Google a mis en place le protocole *Thread*, interopérable avec *Google Home* (*hub*) et *Android* (*contrôleur*). Bien avant, des constructeurs specialisés ont developpés *Zigbee*, *Z-Wave* ou encore *ANT+*.  
-Beaucoup de protocoles se battent pour avoir accès à un marché juteux encore instable car en plein développement. Cependant beaucoup d'objets connectés n'ont pas besoin de l'interconnexion qu'apportent ces protocoles et le *BLE* est loin d'etre desuète, étant continuellement retravaillé et proposant des améliorations intéressantes dans ce milieu.
+Beaucoup de protocoles se battent pour avoir accès à un marché juteux encore instable car en plein développement. Cependant beaucoup d'objets connectés n'ont pas besoin de l'interconnexion qu'apportent ces protocoles et le *BLE* est loin d'etre obsolète, étant continuellement retravaillé et proposant des améliorations intéressantes dans ce milieu.
