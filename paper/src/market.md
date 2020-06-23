@@ -1,3 +1,6 @@
+```{=latex}
+\clearpage
+```
 
 # Objets connectés
 

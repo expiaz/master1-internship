@@ -1,32 +1,53 @@
-
-### Intégration
-
-Mirage est un "*framework offensif pour l'audit des protocoles sans fil*"^[https://homepages.laas.fr/rcayre/mirage-documentation/index.html]. Il a ete pense pour le *pentest* (audit de sécurité) donc un usage exclusivement en ligne de commandes (*CLI*). Meme si le framework se veut beaucoup plus modulaire et extensible que ces predecesseurs (BTLEJack notamment), cette modularite a ete pensee pour l'interface en ligne de commandes.  
-Mirage fournit des briques logicielles pour communiquer avec des appareils (dongles, sniffers) ainsi que decortiquer les protocoles, ce qui constitue le coeur du framework. Ces briques logicielles de base sont utilisees par des *modules* dans un but precis, par exemple realiser le brouillage d'une communication BLE. Mirage fournie un certain nombre de modules fournissant les attaques retrouvees dans les autres outils d'audit du BLE (*BTLEJack*, *GATTAcker*, ...) precedement discutes. Similaire a la philosophie d'Unix, ces modules sont specialisés dans une tache precise et peuvent etres assemblés entre eux pour realise des fonctionnalites plus complexes comme la connexion avec le module *ble_connect* puis l'extraction d'informations avec *ble_discover*. Enfin, il est possible de modifier les etapes d'une attaque via les *scénarios*: chaque module accepte un scénario surchargeant son flux d'execution et ses methodes.
-
-
-mirage extensible certes mais seulement en CLI selon ces regles
-Pas pense pour vivre dans un back-end, fait pour le pentest: une attaque puis shutdown => etat instable apres une attaque, non fiabilite des appareils utilises pour conduire l'attaque car fermeture des connexions non effectué normalement fait par shutdown de mirage
-Creation API pour integration avec Flask mais couches CLI et Modules fortements liées, problemes de personnalisations de l'API sans modifier le coeur des modules ou de mirage => instanciation manuelle de l'app et des modules au besoin
-
-### Interfaces
-
-Inutile et long de reconduire l'interface CLI de mirage en API pour le back, la rendre accessible depuis GUI via websockets puis la rendre en HTML/CSS/JS. Les attaques selectionnees demandent actions utilisateurs car modification a la volee d'informations, seul le scan et localisation sont autonomes. Decision de laisse le front pour demo localisation et scan pour sensibilisation fuite d'informations passive BLE (smartphones, airpods, pc).  
-Utilisation CLI Mirage avec modules personnalisés pour conduire les attaques choisies (et meme plus puisque mirage dispose d'une multitudes d'attaques).
+```{=latex}
+\clearpage
+```
 
 # Travail réalisé
 
 ## Scan
 
-sniffer micro bit
-Repertorier les appareils BLE ainsi que connexion etablies a proximité
-Mecanisme d'annonces publique sur canaux 37,38,39, canaux de donnees scannable a la recherche de connexions
-Tout appareil BLE
-module ble_sniff modifié pour scanner indefiniement les connexion alentours
-Mitigation indirecte integree au protocole par le channel hopping et channel map
-Parametres de connexion personnalisé (channel map, channel hop and time), eviter les valeurs par défaut, ne pas emettres d'annonces inutiles
+Le scan des appareils et connexions BLE alentours se base sur un sniffer BLE, la carte BBC micro:bit dans mon cas. Les fonctionnalités de scan sont nativement supportée par Mirage et intégrées dans le firmware personnalisé adéquat au framework.  
+C'est l'une des deux attaques retrouvé dans le front-end: via les controles mis a disposition, l'utilisateur peut commencer un scan qui notifiera le front-end lors de découvertes, puis l'arrêter quand bon lui semble. Les appareils et connexions repertoriees sont affichees dans des listes avec les informations extraites (voir @fig:front-lists).
+
+![Appareils et connexions repertoriées à proximité](img/lists.png){#fig:front-lists width=70%}
+
+La carte BBC micro:bit n'intégrant qu'une puce nRF51, une seule commande peut être réalisée à la fois, Mirage met cependant en place du balayage de canaux basé sur un changement rapide de commandes directement dans le firmware via les minuteurs disponibles sur la carte. Ce balayage est notamment utilisé pour la découverte d'appareils BLE sur les canaux d'annonces 37, 38 et 39 ainsi que l'interception de connexions sur les 37 autres canaux de données.  
+Le sniffing des connexions est peu fiable dû au changement impredictible de canaux imposé par le *channel hopping*. Cette mitigation intégrée au protocole BLE rend incertain le temps pour identifié une ou plusieurs connexions BLE, la carte micro:bit changeant elle aussi de canaux pour maximiser ces chances de trouver des connexions les utilisants.  
+
+Cette attaque profite du caractère publique des canaux utilisés pour les communications, il est possible de mitigé son impact en rendant plus difficile l'identification des appareils par la reduction du nombre d'annonces émises et en choisissant le type d'annonce en fonction des besoins. Il n'est pas toujours necessaire d'emettre des annonces indirecte contenant des données du *GAP*, les annonces directes contiennent par exemple seulement le *central* recherché, rendant plus complexe la tache d'identification de l'appareil. La découverte des connexion peut egalement etre durcie en modifiant les parametres de connexion emis, plutot que d'utiliser une carte des canaux par defaut se basant sur les 37 canaux de donnees.
 
 ## Localisation
+
+Il existe plusieurs moyens de localiser des appareils, la localisation interieur est d'ailleurs un champ de recherche complexe et tres actif allant de l'inventaire d'entrepots jusqu'au profilage publicitaire.  
+Pour obtenir une estimation de la distance d'un appareil on peut se basé sur le temps que met l'onde a nous parvenir (appelé *Time Of Arrival* ou *TOA*) pour en deduire la distance a partir de sa vitesse. Cependant cela requiert une information fournie par l'emetteur: l'heure d'émission, en me placant en tant qu'attaquant je ne controle pas les appareils ciblés et ne peut pas garantir la presence de cette information car peut utilisée dans les appareils particuliers.  
+Une autre methode beaucoup plus populaire et accessible se base sur le RSSI. Le BLE permettant une plage de puissance d'emission, le RSSI seul ne permet de calculer la distance: cela requiert la puissance d'emission utilisée de la part de l'emetteur. Un standard a cependant ete developpé pour les beacons, nommé iBeacon, il est intégreé dans le *GAP* et le *GATT* en tant que *Tx Power* (puissance de transmission) et fournie une valeur de calibrage représentant la puissance mesurée par le constructeur a 1 metre. Meme si sa presence n'est pas garantie, le standard est tres répandu dans les appareils de bureautique, notament ceux d'Apple.  
+Les entrepots et centres commerciaux se basent sur le *fingerprinting*, c'est a dire l'identification des appareils proches, pour en deduire une position. Chaque appareil est répertorier avec sa position et son calibrage, l'objet a localiser applique une *trilateration* a partir de la position de 3 appareils a proximité.  
+
+Cela amene une seconde problematique, le *TOA* et *RSSI* ne fournissent pas d'information sur la direction de l'appareil, seulement une distance. Il faut alors croiser plusieurs relevés avec de la trilateration, procedé au coeur du systeme GPS visant a trouver une intersection commune entre minimum 3 cercles (voir @fig:methodes-localisation), ou utiliser une matrice d'antennes calculant la direction du signal reçu.  
+Le BLE intègre depuis la version 5.1 le mecanisme d'angles de départ et d'arrivée (*AOA*/*AOD*) permettant de trouver la direction a l'aide d'une matrice d'antennes. Chaque antenne recois le signal avec un decalage par rapport a ses voisines, ce decalage temporel est utilisé pour approximer l'angle d'emission. A partir de plusieurs emetteurs on peut determiner une position sans se baser sur le *RSSI* ou *TOA* mais en utilisant la *triangulation*.
+
+Pour ma part, je travail sur la version 4.0 du protocole BLE, qui n'integre pas le mecanisme *AOA*/*AOD*. Meme si il est possible de mettre en place cette methode sans la version 5.1 du BLE, cela requiert une matrice d'antennes, materiel indispoble au vu des conditions exceptionnelles.  
+J'ai opté pour le *RSSI* au vu de la popularité et facilité de mise en place de la methode. Les relevés sont fortement impactés par l'environnement, l'etude de celui-ci et la mise en place de modeles etant impossible dans mon cas, j'ai fixé le facteur environnmental à 2 (environnement urbain). Je laisse tout de meme la possibilite a l'utilisateur de modifier ce facteur si besoin. Le second facteur est la sensibilité de reception, la puce nRF51 garantie une valeur à plus ou moins 6dBm avec un seuil de -30 a -90dBm, mon but est de reduire l'impact des ecarts de releves.
+
+### Precision
+
+Pour les appareils en mouvement on peut ajouter de la precision avec le *dead-reckoning*, permettant de faire des previsions de position a partir de celle actuelle et des capteurs intégrés a l'appareil (gyroscope, accelerometre). On retrouve ce mecanisme pour les appareils ou applications GPS, tirant avantage des capteurs integres dans nos smartphones.
+Des modeles mathematiques comme le filtre de Kalman permettent d'approximé les prochaines valeurs. Enfin, un modele de pertes peut etre realise par entrainement dans l'environnement voulu pour reajusté les valeurs relevées.
+
+Le fait de se placer en tant qu'attaquant donc de ne pas controller les appareils rend le *dead-reckoning* inutilisable. Le modele de pertes pour un environnement donné n'est pas envisageable car le projet est fait pour repertorier les appareils rapidement pour la sensibilisation et est donc amené a changer d'environnement frequement.  
+Dans le but de reduire les ecarts, j'ai commencé par un lissage des valeurs sur une fenetre modifiable. Cela me permet de confimer une tendance, minimisant l'impact des fluctuations du *RSSI*. Le filtre de Kalman semble etre une amelioration interessante et pourrait etre une prochaine etape.
+
+### Intégration
+
+La localisation se base sur le travail d'identification precedement realisé par la phase de scan. Le firmware Mirage integre des informations relevees depuis la puce nRF51 sur la transmission reçu comme la puissance du signal (*Received Signal Strength Indicator* ou *RSSI*). A partir de cette information ainsi qu'un calibrage il est possible d'approxime la distance de l'emetteur en utilisant la formule de TODO:
+
+module ble_locate
+
+front
+
+![Carte des appareils localisés](img/radar.png){#fig:radar width=50%}
+
+Cette attaque concerne seulement les appareils implemetant le standard iBeacon. D'une facon plus generale l'attaque est facilement mitigable en ne transmettant pas d'indication de distance dans le *GAP*, l'exposant uniquement dans le *GATT* une fois le *central* identifié. Même si les beacons sont forcés d'inclure ses indications dans le *GAP*, ils ne sont pas concernés par la plupart des attaques car non connectables.
 
 BBC MicroBit
 Localisation des appareils annoncant alentours avec RSSI et calibrage

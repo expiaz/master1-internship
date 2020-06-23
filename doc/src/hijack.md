@@ -23,6 +23,10 @@ Use mirage CLI entrypoint to issue commands:
 ```bash
 # Hijack then capture connection with a shell as master
 libs/mirage/mirage_launcher "ble_hijack|ble_master" HIJACKING_MODE=existingConnections
-# equivalent to launching ble_sniff directly
+# equivalent to launching ble_hijack directly
 libs/mirage/mirage_launcher "ble_sniff|ble_master" INTERFACE=microbit0 SNIFFING_MODE=existingConnections HIJACKING=yes
 ```
+
+## Troubleshooting
+
+can take time to catch up connection bc bbc jumps but also conn, possible para not integrated in mirage to monitor multiple data chan
