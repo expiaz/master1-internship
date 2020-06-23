@@ -40,6 +40,8 @@ metadata:
     lofTitle: "Figures"
     lotTitle: "Tableaux"
     lolTitle: "Listes"
+    bibliography: biblio.bib
+    csl: templates/citation.csl
 
 
 # note that structured variables may be specified:
@@ -70,5 +72,3 @@ variables:
     geometry: [margin=3cm]
     babel-lang: french
     babel-otherlangs: [english]
-
-    bibliography: biblio.bib

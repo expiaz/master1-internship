@@ -38,7 +38,7 @@ Le protocole met en place le *saut de fréquence*, consistant à changer de cana
 Sur les 40 canaux que compose le spectre, 3 sont utilisés pour la transmission d'annonce. Ils sont choisit pour ne pas interferer avec les canaux Wi-Fi car les deux protocoles sont amenés à coexister (voir @fig:ble-channels).  
 Les 37 autres canaux sont utilisés pour les connexions. Chaque connexion va utiliser un sous-ensemble des 37 canaux (appelé carte des canaux) pour éviter les interférences avec les autres protocoles et connexions BLE. Un seul canal transmet des données à la fois mais tous les canaux de la carte sont utilisés pour le saut de fréquences.
 
-![Répartition du spectre BLE en canaux^[https://www.accton.com/Technology-Brief/ble-beacons-and-location-based-services/]](img/ble-chan.jpg){#fig:ble-channels width=90%}
+![Répartition du spectre BLE en canaux[@ble-chan]](img/ble-chan.jpg){#fig:ble-channels width=90%}
 
 ### Couche logique
 
@@ -46,16 +46,12 @@ Les 37 autres canaux sont utilisés pour les connexions. Chaque connexion va uti
 
 #### 1. Annonces
 
-Le *peripheral* indique sa présence avec des annonces émises périodiquement. Ces annonces contiennent sont addresse Bluetooth (permettant une connexion) et des données qui consituent un profile (appelé *GAP*[^gap]). Ces données permettent aux *centrals* de savoir si il est capable de réaliser les fonctionnalités recherchées.  
-La spécification Bluetooth définit des profiles type pour des applications communes dans les appareils BLE[^gatt]. Cela inclus par exemple les capteurs corporels pour le sport, les capteurs médicaux de surveillance (pour les diabetiques notamment), la domotique (termomètres, lampes), etc.
+Le *peripheral* indique sa présence avec des annonces émises périodiquement. Ces annonces contiennent sont addresse Bluetooth (permettant une connexion) et des données qui consituent un profile (appelé *GAP*[@gap]). Ces données permettent aux *centrals* de savoir si il est capable de réaliser les fonctionnalités recherchées.  
+La spécification Bluetooth définit des profiles type pour des applications communes dans les appareils BLE[@gatt]. Cela inclus par exemple les capteurs corporels pour le sport, les capteurs médicaux de surveillance (pour les diabetiques notamment), la domotique (termomètres, lampes), etc.
 
 Dans un environnement BLE, les *centrals* ne peuvent pas reconnaître leurs *peripherals* à part avec une addresse Bluetooth fixe, mécanisme de moins en moins utilisé car vulnérable à l'usurpation. Les *peripherals* générent donc des adresses aléatoires et l'identification se fait via les données du *GAP* contenues dans l'annonce. Ce mécanisme permet à n'importe quel *central* de s'appairer à n'importe quel *peripheral* proposant le profil recherché.  
 Par exemple, une application de smartphone BLE pouvant gérer la température pourrait s'appairer et utiliser n'importe quel appareil BLE qui implémente le profil standardisé pour les termomètres dans le *GAP*.  
-Les profils ne sont certes pas exhaustifs mais permettent une intégration fonctionnelle avec un maximum d'appreils et prévoient un moyen d'intégrer des données propriétaires non standardisées[^gap-ext].
-
-[^gap]: https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
-[^gatt]: https://www.bluetooth.com/specifications/gatt/services/
-[^gap-ext]: https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2017/02/10/bluetooth_advertisin-hGsf
+Les profils ne sont certes pas exhaustifs mais permettent une intégration fonctionnelle avec un maximum d'appreils et prévoient un moyen d'intégrer des données propriétaires non standardisées[@gap-prop].
 
 #### 2. Connexion
 
@@ -74,14 +70,14 @@ Les exigences comprennent la protection aux attaques *MITM* par l'authentificati
 | Yes/No | mécanisme permettant d'indiquer *oui* ou *non* |
 | Keyboard | claver numérique avec mécanisme *oui*/*non* |
 
-: Capacités d'entrée possibles^[https://www.bluetooth.com/blog/bluetooth-pairing-part-1-pairing-feature-exchange/] {#tbl:ble-input-caps}
+: Capacités d'entrée possibles[@ble-caps] {#tbl:ble-input-caps}
 
 | Capacité | Description |
 | --- | --- |
 | No output | pas la capacité de communiquer ou afficher un nombre |
 | Numeric Output | peut communiquer ou afficher un nombre |
 
-: Capacités de sortie possible {#tbl:ble-output-caps}
+: Capacités de sortie possible[@ble-caps] {#tbl:ble-output-caps}
 
 | | No output | Numeric output |
 | --- | --- | --- |
@@ -89,7 +85,7 @@ Les exigences comprennent la protection aux attaques *MITM* par l'authentificati
 | Yes/No | NoInputNoOutput | DisplayYesNo |
 | Keyboard | KeyboardOnly | KeyboardDisplay |
 
-: Capacité d'entrées/sorties de l'appareil {#tbl:ble-io-caps}
+: Capacité d'entrées/sorties de l'appareil[@ble-caps] {#tbl:ble-io-caps}
 
 #### 4. Appairage
 
@@ -103,7 +99,7 @@ En fonction des capacités et des exigences émises par chacun des appareils, un
 | **NoIO** | JustWorks | JustWorks | JustWorks | JustWorks | JustWorks |
 | **KbdDisplay** | PassKey | PassKey | PassKey | JustWorks | PassKey |
 
-: Méthode d'appairage utilisée en fonction des capacités échangées^[https://www.bluetooth.com/blog/bluetooth-pairing-part-2-key-generation-methods/] {#tbl:ble-pairing-methods}
+: Méthode d'appairage utilisée en fonction des capacités échangées[@ble-pair-methods]{#tbl:ble-pairing-methods}
 
 Je m'intéresse principalement à la methode *JustWorks*. C'est celle par défaut lorsque deux appareils ne disposent pas des capacités nécessaires pour une autre. Elle est notamment beacoup présente pour les objets connectés puisque n'intégrant pas de mécanismes pour un appairage plus complexe (claver ou écran).  
 *Passkey* permet d'authentifier l'appairage pour se protéger des usurpations d'identité (*Spoonfing* et *MITM*) puisque partageant un secret via l'utilisateur (ou un autre canal dans le cas du *OOB*). *JustWorks* ne permet pas d'authentifier les appareils et le chiffrement est moins robuste que les autres méthodes mais permet tout de même d'établir une communication chiffrée.  
@@ -140,11 +136,9 @@ Un service correspond generalement a un profil (standardisé ou non) comme par e
 À moins de connaître exactement l'appareil et de l'interroger à l'aveugle via les *handles* (ce qui peut être le cas entre des appareils propriétaires), il faut procéder par étape en découvrant d'abors les services disponibles, puis chaque caractéristique par service et enfin les valeurs de celles-ci.  
 Pour procéder à la découverte d'un appareil, le protocole *ATT* dispose d'un type de requête par couche à interroger (voir @fig:ble-gatt-arch). Une fois le service voulu trouvé (ou la cartographie totale de l'appareil realisée), on peut lire, écrire ou souscrire à des attributs directement par *handle*. Le *GATT* met en place un système de droits par attribut pour protéger la lecteur, l'écriture et la souscription par le client.
 
-Le *GATT* définit égalemet des services standardisés appelés primaire et secondaire censés êtres présent sur tous les appareils BLE afin de connaître les fonctionnalités standardisées (service primaire) et propriétaires (service secondaire) de l'appareil. Comme les *handle* sont définies arbitrairement par le serveur *GATT*, les profils standards et leurs services/caractéristiques sont identifiés par un *UUID* standardisé identique dans tout les appareils BLE [^gatt-std-services].
+Le *GATT* définit égalemet des services standardisés appelés primaire et secondaire censés êtres présent sur tous les appareils BLE afin de connaître les fonctionnalités standardisées (service primaire) et propriétaires (service secondaire) de l'appareil. Comme les *handle* sont définies arbitrairement par le serveur *GATT*, les profils standards et leurs services/caractéristiques sont identifiés par un *UUID* standardisé identique dans tout les appareils BLE[@gatt-std-services].
 
-[^gatt-std-services]: https://www.bluetooth.com/specifications/gatt/services/
-
-![Client et serveur GATT^[https://fr.mathworks.com/help/comm/examples/modeling-of-ble-devices-with-heart-rate-profile.html]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=70%}
+![Client et serveur GATT[@ble-gatt-arch]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=70%}
 
 ## Évolution
 

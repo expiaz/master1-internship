@@ -9,5 +9,3 @@
 ```{=latex}
 \clearpage
 ```
-
-# Références
