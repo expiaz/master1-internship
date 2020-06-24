@@ -22,19 +22,19 @@ Maintenant il s'avère que beaucoup d'appareils autonomes simples ne mettent en 
 Mettre en place un outil basé sur un framework offensif permettant de répertorier et faciliter l'analyse des appareils et connexion BLE alentours. Cet outil est facilement portable sur diverses cartes de développement comme la Raspberry Pi car conteneurisé avec *Docker* et se basant sur du matériel USB pour l'étude du protocole.  
 3 ports USB suffisent pour permettre de conduire toutes les attaques proposées par le framwork offensif utilisé: 2 dongles USB BLE 4.0 et une carte BBC Micro:bit.  
 Le projet suppose la mise en place de 3 attaques dont une nouvelle non integrée à Mirage:
-- Inventaire des appareils et connexions a proximité + localisation des appareils (*scan*)
+- Inventaire des appareils et connexions a proximité + localisation des appareils (*scan* et *sniffing*)
 - Usurpation et mise en place d'un *Man In The Middle* sur un appareil selectionné (*spoofing*)
 - Synchronisation puis détournement par brouillage d'une connexion précédement identifiée (*hijacking*)
 
 ## Architecture
 
-serveur flask + websockets
-application js (hyperapp) + socketio
-framework offensif Mirage (python) + bindings custom pour communication API et non CLI
+Le back-end en *Python* permet le pilotage de Mirage via une API ajoutée (en rouge sur @poc-arch). Cette API fait le lien entre le serveur HTTP/Websocket Flask (violet) et Mirage (bleu) qui pilote le matériel nécéssaire pour les attaques (vert). Côté front-end j'ai opté pour une interface web car les technologies du web (surtout du *Javascript*) ont explosé ces dernières années, rendant l'intégration d'intefaces plus simples et flexibles que les GUI applicatifs. Cette page etant une interface de controle, un framework *Javascript* (Hyperapp, en bleu clair) permet l'interactivité recherchée. Concernant les communications, il me fallait un protocole à double sens puisque l'on doit pourvoir suivre l'avancée d'une attaque en temps réel, ce que ne permet pas HTTP. Les websockets etant tres populaires dans les applications *Javascript* comme les mini-jeux, jai intégré Socket.IO (jaune) en front et back-end: c'est une librairie de communication evenementielle basee sur les websockets. Hyperapp ou Flask souscrivent aux evenements de Socket.IO pour lancer des attaques sur Mirage ou modifier le DOM (*Document Object Model*, c'est la vue HTML représentée en rouge sur @poc-arch) en adéquation.
 
-![Architecture du système](img/poc-architecture.png){#fig:poc-arch width=85%}
+![Architecture du système](img/poc-arch.png){#fig:poc-arch width=85%}
 
 ## Interface
+
+TODO
 
 But d'augmenter Mirage avec front-end pour demo et conduire attaques *type*
 
@@ -45,4 +45,4 @@ Pour chaque cible (appareil ou connexion), des attaques sont disponibles:
 - Récupération du profil ou modification des transimissions par usurpation pour un appareil BLE emettant des annonces (zone bleue *Devices*).
 - Déconnexion des appareils ou interception des communications entre deux appareils appairés (zone bleue *Connections*).
 
-![Interface du système](img/front.png){#fig:front width=80%}
+![Interface du système](img/front.png){#fig:front width=100%}

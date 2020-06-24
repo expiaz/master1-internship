@@ -4,6 +4,7 @@
 
 # Hijack
 
+This module uses the `BCC micro:bit`, make sure it's plugged in your PC.  
 As explained in the corresponding documentation^[https://homepages.laas.fr/rcayre/mirage-documentation/blemodules.html#id87], this integrated Mirage module named `ble_hijack` allows to:
 
 > *sniff an established connection, synchronize to it and jam the packet emitted by the slave. As a consequence, if the master reachs its timeout value, it disconnects from the slave device and the attacker is able to communicate with the slave device instead of him.*.
@@ -29,4 +30,4 @@ libs/mirage/mirage_launcher "ble_sniff|ble_master" INTERFACE=microbit0 SNIFFING_
 
 ## Troubleshooting
 
-can take time to catch up connection bc bbc jumps but also conn, possible para not integrated in mirage to monitor multiple data chan
+It can take some time to discover a connection, and may never be able to find anything sometimes, because of *channel hopping*. The micro:bit changes channel frequently but so does the connections, so it's a matter of time and luck until it crosses a used channel.

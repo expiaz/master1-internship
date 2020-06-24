@@ -4,7 +4,9 @@
 
 # Locate
 
-Module `ble_locate` at `src/modules/ble_locate.py`, locate nearby BLE devices and sniff connections.
+This module uses the `BCC micro:bit`, make sure it's plugged in your PC.  
+Module `ble_locate` at `src/modules/ble_locate.py`, locate nearby BLE devices and sniff connections.  
+The localisation is based on the presence of `TxPower` in the advertisement, even if it's possible de sometimes find `TxPower` in the *GATT*, I choose not to connect to the target device if it's missing from the *GAP* because it's supposed to be a stealth attack.
 
 ## Parameters
 
