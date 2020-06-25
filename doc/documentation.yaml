@@ -17,6 +17,9 @@ data-dir: "."
 #template: custom.tex
 standalone: true
 
+listings: true
+include-in-header: ['templates/header.tex']
+
 # note that structured variables may be specified:
 variables:
     title: "Documentation projet étude du BLE"

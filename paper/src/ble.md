@@ -4,19 +4,19 @@
 
 # Bluetooth Low energy
 
-Le protocole a principalement été designé par Nokia pour répondre au besoin d'un protocole sans fil peu gourmand en énergie permettant la communication avec les péripheriques personnels (téléphone portable, montre, casque audio). Nommé *Wibree*, il a été intégré au standard Bluetooth sous le nom *Low Energy*.  
-Le Bluetooth ne comprend pas seulement un protocole mais une multitude d'entre eux (BR, EDR, HS) qui ont en commun de permettre la communication (et l'échange de données) sans fil avec des périphériques personnels. Ils font partit des protocoles *WPAN* et leur distance d'émission varie de quelques mètres jusqu'à 30 mètres.  
-La spécification Bluetooth 4.0, sortie en 2010, intégre le protocole LE (*Low Energy*) et permet au Bluetooth de toucher le marché des systèmes embarqués fonctionnants sur batterie.
+Le protocole a principalement été designé par Nokia pour répondre au besoin d'un protocole sans fil peu gourmand en énergie permettant la communication avec les périphériques personnels (téléphone portable, montre, casque audio). Nommé *Wibree*, il a été intégré au standard `Bluetooth` sous le nom *Low Energy*.  
+Le `Bluetooth` ne comprend pas seulement un protocole mais une multitude d'entre eux (`BR`, `EDR`) qui ont en commun de permettre la communication (et l'échange de données) sans fil avec des périphériques personnels. Ils font partit des protocoles *WPAN* et leur distance d'émission varie de quelques mètres jusqu'à 30 mètres.  
+La spécification `Bluetooth` 4.0, sortie en 2010, intégre le protocole `LE` (*Low Energy*) et permet au `Bluetooth` de toucher le marché des systèmes embarqués fonctionnants sur batterie.
 
 ## Différences
 
-Les autres protocoles du Bluetooth sont principalement connus et utilisés pour le transfert de contenu multimédia, que ce soit des fichiers entre ordinateurs comme de la musique avec un casque ou encore une voiture. Ils fonctionnement avec une connexion continue et un transfert en mode flux.  
-Le BLE, visant à reduire la consommation d'énergie, n'établie pas de connexion continue. L'appareil reste la plupart du temps en mode veille, pouvant émettre des annonces, dans l'attente d'une connexion qui aura pour effet d'arrêter la transmission d'annonces. Pour chaque requête reçu, une réponse pourra être renvoyée ou une notification mise en place périodiquement.  
-Les appareils BLE et Bluetooth BR/EDR ne sont pas compatibles, n'utilisant pas les mêmes technologies/protocoles et répondant à des besoin différents (voir @tbl:bluetooth-use-case).
+Les autres protocoles du `Bluetooth` sont principalement connus et utilisés pour le transfert de contenu multimédia, que ce soit des fichiers entre ordinateurs comme de la musique avec un casque ou encore une voiture. Ils fonctionnement avec une connexion continue et un transfert en mode flux.  
+Le `BLE`, visant à reduire la consommation d'énergie, n'établie pas de connexion continue. L'appareil reste la plupart du temps en mode veille, pouvant émettre des annonces, dans l'attente d'une connexion qui aura pour effet d'arrêter la transmission d'annonces. Pour chaque requête reçu, une réponse pourra être renvoyée ou une notification mise en place périodiquement.  
+Les appareils `BLE` et `Bluetooth BR/EDR` ne sont pas compatibles, n'utilisant pas les mêmes technologies/protocoles et répondant à des besoin différents (@tbl:bluetooth-use-case).
 
-| **Besoin** | Flux données | Transmisson données | Localisation | Reseau capteurs |
+| **Besoin** | Flux données | Transmisson données | Localisation | Réseau capteurs |
 | --- | --- | --- | --- | --- |
-| **Appareils** | ordinateur, smartphone, casque, enceinte, voiture | accessoires bureautique ou fitness, equipement medical | beacon, IPS, inventaire | automatisation, surveillance, domotique |
+| **Appareils** | ordinateur, smartphone, casque, enceinte, voiture | accessoires bureautique ou fitness, équipement médical | beacon, IPS, inventaire | automatisation, surveillance, domotique |
 | | | | | |
 | **Topologie** | point à point | point à point | diffusion (1 à N) | mesh (N à N) |
 | | | | | |
@@ -26,17 +26,17 @@ Les appareils BLE et Bluetooth BR/EDR ne sont pas compatibles, n'utilisant pas l
 
 ## Protocole
 
-Pour permettre une interopérabilité maximale entre les appareils BLE, le standard défini 4 profils en fonction du role de l'appareil: `Peripheral`, `Central`, `Broadcaster`, `Observer`. Chaque appareil se conformant au standard ne doit implémenter qu'un seul de ces rôles à la fois.  
-Le *Broadcaster* ne communique qu'avec des annonces, on ne peut pas s'y connecter. Ce mode est tres populaire pour les beacons. L'*Observer* est sont opposé, il ne fait qu'écouter les annonces, n'établiera jamais de connexion.  
-Le *Peripheral* et le *Central* forment la seconde pair et permettent la mise en place d'une architecture client-serveur. Le *Peripheral* joue le role du serveur et est dit *esclave* du *Central* qui endosse le rôle du client et *maître*.  
-Le *peripheral* transmet des annonces jusqu'à recevoir une connexion d'un *central*, après quoi il arrête de s'annoncer car ne peut être connecté qu'à un *central* à la fois. Le *central* écoute les annonces de *peripherals* pour s'y connecter, puis interroge ses services via les requêtes *ATT/GATT* (*Generic Attribute*).
+Pour permettre une interopérabilité maximale entre les appareils `BLE`, le standard défini 4 profils en fonction du rôle de l'appareil: *Peripheral*, *Central*, *Broadcaster*, *Observer*. Chaque appareil se conformant au standard ne doit implémenter qu'un seul de ces rôles à la fois.  
+Le *broadcaster* ne communique qu'avec des annonces, on ne peut pas s'y connecter. Ce mode est très populaire pour les balises (*beacons*). L'*observer* est sont opposé, il ne fait qu'écouter les annonces, n'établiera jamais de connexion.  
+Le *peripheral* et le *central* forment la seconde paire et permettent la mise en place d'une architecture client-serveur. Le *peripheral* joue le rôle du serveur et est dit esclave du *central* qui endosse le rôle du client et maître.  
+Le *peripheral* transmet des annonces jusqu'à recevoir une connexion d'un *central*, après quoi il arrête de s'annoncer car ne peut être connecté qu'à un *central* à la fois. Le *central* écoute les annonces de *peripheral* pour s'y connecter, puis interroge ses services via les requêtes *ATT/GATT*.
 
 ### Couche physique
 
-Le BLE opère dans la bande ISM 2.4GHz tout comme le Wi-Fi. Contrairement aux canaux Wi-Fi de 20MHz, le BLE découpe le spectre en 40 canaux de de 2MHz (plage de 2400 à 2480MHz).  
-Le protocole met en place le *saut de fréquence*, consistant à changer de canal d'émission tout les laps de temps donné, pour réduire le risque de bruit sur les fréquences utilisées (la bande ISM 2.4Ghz étant libre d'utilisation).  
-Sur les 40 canaux que compose le spectre, 3 sont utilisés pour la transmission d'annonce. Ils sont choisit pour ne pas interferer avec les canaux Wi-Fi car les deux protocoles sont amenés à coexister (voir @fig:ble-channels).  
-Les 37 autres canaux sont utilisés pour les connexions. Chaque connexion va utiliser un sous-ensemble des 37 canaux (appelé carte des canaux) pour éviter les interférences avec les autres protocoles et connexions BLE. Un seul canal transmet des données à la fois mais tous les canaux de la carte sont utilisés pour le saut de fréquences.
+Le `BLE` opère dans la bande ISM 2.4GHz tout comme le `Wi-Fi`. Contrairement aux canaux `Wi-Fi` de 20MHz, le `BLE` découpe le spectre en 40 canaux de de 2MHz (plage de 2400 à 2480MHz).  
+Le protocole met en place le *saut de fréquence* qui consiste à changer de canal d'émission tout les laps de temps donné pour réduire le risque de bruit sur les fréquences utilisées (la bande ISM 2.4Ghz étant libre d'utilisation).  
+Sur les 40 canaux que compose le spectre, 3 sont utilisés pour la transmission d'annonce. Ils sont choisit pour ne pas interférer avec les canaux `Wi-Fi` car les deux protocoles sont amenés à coexister (@fig:ble-channels).  
+Les 37 autres canaux sont utilisés pour les connexions. Chaque connexion va utiliser un sous-ensemble des 37 canaux (appelé carte des canaux) pour éviter les interférences avec les autres protocoles et connexions `BLE`. Un seul canal transmet des données à la fois mais tous les canaux de la carte sont utilisés pour le saut de fréquences.
 
 ![Répartition du spectre BLE en canaux[@ble-chan]](img/ble-chan.jpg){#fig:ble-channels width=90%}
 
@@ -138,7 +138,7 @@ Pour procéder à la découverte d'un appareil, le protocole *ATT* dispose d'un 
 
 Le *GATT* définit égalemet des services standardisés appelés primaire et secondaire censés êtres présent sur tous les appareils BLE afin de connaître les fonctionnalités standardisées (service primaire) et propriétaires (service secondaire) de l'appareil. Comme les *handle* sont définies arbitrairement par le serveur *GATT*, les profils standards et leurs services/caractéristiques sont identifiés par un *UUID* standardisé identique dans tout les appareils BLE[@gatt-std-services].
 
-![Client et serveur GATT[@ble-gatt-arch]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=70%}
+![Client et serveur GATT[@ble-gatt-arch]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=90%}
 
 ## Évolution
 

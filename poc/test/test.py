@@ -12,6 +12,7 @@ if __name__ == '__main__':
         mainApp.debug = True
         mainApp.start()
         
+        # disclaimer: that doesn't work, must use threads
         masterTask = utils.addTask(mockMaster)
         slaveTask = utils.addTask(mockSlave)
     except (KeyboardInterrupt,EOFError):

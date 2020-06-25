@@ -26,4 +26,10 @@ RUN pip3 install -r mirage-requirements.txt
 RUN rm mirage-requirements.txt
 
 # launch Flask server on localhost:5000
-#TODO CMD [ "python3", "server/app.py" ]
+# commented out because devices are unrealiable
+# and can crash mirage between attacks
+# thus crashing Flask and closing the container
+# so it's easier to launch it manually when needed
+# and kill it when it crashes, it also gives access to
+# the execution trace of the error
+#CMD [ "python3", "server/app.py" ]

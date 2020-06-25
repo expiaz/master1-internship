@@ -2,6 +2,7 @@
 .vscode
 __pycache__
 
+paper/__latexindent_temp.tex
 bin
 biblio/repos
 poc/shared

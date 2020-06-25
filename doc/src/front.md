@@ -2,7 +2,7 @@
 \clearpage
 ```
 
-# Web interface
+# Dashboard
 
 The interface is quite simple, it consists of controls to start/stop scans at the top left, a map of located devices, logs from Mirage execution in back-end and last but no least the list of found devices as well as connections. Each row contain informations who can later be used to launch attacks from the CLI using Mirage.  
 

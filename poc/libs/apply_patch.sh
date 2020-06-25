@@ -11,5 +11,5 @@ if [ -f "$target.patch" ]; then
     git apply "../$target.patch"
     echo "patch applied from $target.patch to $target"
 else
-    echo "run 'git submodule init' first"
+    echo "run 'git submodule init and git submodule update' first"
 fi

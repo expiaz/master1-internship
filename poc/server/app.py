@@ -73,7 +73,7 @@ def startAttack(payload):
     if state.task != None:
         return
 
-    if payload['attack'] == 'scanDevice':
+    if payload['attack'] == 'scan':
 
         def onDeviceFound(devices):
             for address, device in devices.items():
@@ -94,7 +94,7 @@ def startAttack(payload):
         utils.registerLogger(mirageLogger)
         state.task = eventlet.spawn(scanDevices)
 
-    elif payload['attack'] == 'scanConnection':
+    elif payload['attack'] == 'sniff':
 
         def onConnectionFound(connections):
             socketio.emit('connectionsUpdate', list(connections.values()))

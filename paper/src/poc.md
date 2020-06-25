@@ -6,15 +6,15 @@
 
 ## Scan
 
-Le scan des appareils et connexions BLE alentours se base sur un sniffer BLE, la carte BBC micro:bit dans mon cas. Les fonctionnalités de scan sont nativement supportée par Mirage et intégrées dans le firmware adéquat au framework.  
-C'est l'une des deux attaques retrouvé dans le front-end: l'utilisateur peut commencer un scan qui notifiera le front-end lors de découvertes, puis l'arrêter quand bon lui semble. Les appareils et connexions répertoriées ainsi que leurs informations sont disponibles sur la colonne de droite (voir @fig:front-lists).
+Le *scan* des appareils et *sniffing* des connexions BLE alentours se base sur un sniffer BLE, la carte `micro:bit` dans mon cas. Les fonctionnalités de scan sont nativement supportée par Mirage et intégrées dans le firmware adéquat au framework.  
+C'est l'une des deux attaques retrouvé dans le front-end: l'utilisateur peut commencer un scan qui notifiera le front-end lors de découvertes, puis l'arrêter quand bon lui semble. Les appareils et connexions répertoriées ainsi que leurs informations sont disponibles sur la colonne de droite (@fig:front-lists).
 
-![Appareils et connexions repertoriées à proximité](img/lists.png){#fig:front-lists width=70%}
+![Appareils et connexions repertoriées à proximité](img/lists.png){#fig:front-lists width=90%}
 
-La carte BBC micro:bit n'intégrant qu'une puce nRF51, une seule commande peut être réalisée à la fois, Mirage met cependant en place du balayage de canaux basé sur un changement rapide de commandes directement dans le firmware via les minuteurs disponibles sur la carte. Ce balayage est notamment utilisé pour la découverte d'appareils BLE sur les canaux d'annonces 37, 38 et 39 ainsi que l'interception de connexions sur les 37 autres canaux de données.  
+La carte BBC micro:bit n'intégrant qu'une puce nRF51, une seule commande peut être réalisée à la fois, Mirage met cependant en place du balayage de canaux basé sur un changement rapide de commandes directement dans le firmware via les minuteurs disponibles sur la carte. Ce balayage permet la découverte d'appareils BLE sur les canaux d'annonces 37, 38 et 39 avec une seul carte micro:bit.  
 Le sniffing des connexions est peu fiable dû au changement impredictible de canaux imposé par le *channel hopping*. Cette mitigation intégrée au protocole BLE rend incertain le temps pour identifié une ou plusieurs connexions BLE, la carte micro:bit changeant elle aussi de canaux pour maximiser ces chances de trouver des connexions les utilisants.  
 
-Cette attaque profite du caractère publique des canaux utilisés pour les communications, il est possible de mitiger son impact en rendant plus difficile l'identification des appareils par la réduction du nombre d'annonces émises et en choisissant le type d'annonce en fonction des besoins. Il n'est pas toujours necessaire d'emettre des annonces indirecte contenant des données du *GAP*, les annonces directes contiennent par exemple seulement le *central* recherché, rendant plus complexe la tache d'identification de l'appareil. La découverte des connexion peut egalement etre durcie en modifiant les parametres de connexion émis, plutot que d'utiliser une carte des canaux par defaut se basant sur les 37 canaux de donnees.
+Cette attaque profite du caractère publique des canaux utilisés pour les communications, il est possible de mitiger son impact en rendant plus difficile l'identification des appareils par la réduction du nombre d'annonces émises et en choisissant le type d'annonce en fonction des besoins. Il n'est pas toujours necessaire d'emettre des annonces indirecte contenant des données du *GAP*, les annonces directes contiennent par exemple seulement le *central* recherché, rendant plus complexe la tache d'identification de l'appareil. Le *sniffing* des connexions peut egalement etre durcie en modifiant les parametres de connexion émis, plutot que d'utiliser une carte des canaux par defaut se basant sur les 37 canaux de donnees.
 
 ## Localisation
 
@@ -52,50 +52,41 @@ Cette attaque concerne cependant seulement les appareils implemetant le standard
 
 ## MITM
 
-TODO
+C'est une des attaques fournies par Mirage, implemetee dans le module `ble_mitm`. Cette attaque ne se base pas sur un sniffer pour intercepter du traffic et extraire des informations mais deux dongles BLE `CSR8510` pour occuper et usurper le *peripheral* ciblé puis profiter du manque d'authentification et un chiffrement peu robuste dans la méthode d'appairage `JustWorks`.  
+L'attaque requiert que le *peripheral* ciblé ne soit pas connecté pour pouvoir usurper son identité et s'annoncer a sa place. Meme si il est auparavant possible de forcer une deconnexion des appareils via du brouillage (principe utilisé dans le *hijacking*), l'attaque echoue si une session (*LTK*) a ete mise en place car celle-ci à besoin des parametres echanges au moment de l'appairage pour casser le chiffrement.  
+L'attaque requiert egalement qu'un *central* se connecte au *peripheral* usurpé, après quoi l'attaquant est en position de *man-in-the-middle*, redirigeant le traffic d'un appareil à l'autre en utilisant les deux dongles CSR8510.  
+Cette attaque fonctionne autant sur des appareils utilisant la connexion comme l'appairage avec la methode `JustWorks` car le chiffrement peut etre facilement cassé avec l'outil *Crackle*[@crackle], implementé par le module `ble_crack` dans Mirage, qui permet de trouver la clef de chiffrement a partir des information echangées lors de l'appairage.
 
-Deux dongles CSR4.0
-Clonage et usurpation du *peripheral* dans l'attente d'une connexion du *central* pour voir/modifier puis relayer le traffic.
-Appairage sans authentification, methode de chiffrement faible (crackle pour briser le chiffrement car acces connect req)
-Objets connectes autonomes
-Module mirage ble_mitm
-Etre au bon endroit au bon moment, *peripheral* non connecté et *central* intention de connexion, phase appairage presente (non bonding)
-Utilisation de methodes d'appairage authentifiee comme PassKey ou NumComp + utilisation connexion securisee LE + mise en place de session LTK
+Les attaques *MITM* sont une problematique repandue dans les communication donc nombres de contre-mesures sont disponibles dans les protocoles réseau. Le BLE fournie d'autres methodes d'appairage permettant d'authentifier la connexion et certains appareils restreignent les droits ou refusent les connexions ne se conformant pas a leurs exigences.
 
 ## Hijack
 
-TODO
+Peut être vu comme une version plus versatile du *MITM* puisque l'attaque peut fonctionner sur une connexion pre-etablie. 
+L'attaque a cependant une vocation uniquement offensive, ne permettant pas la rétro-ingénierie par l'etude des communication echangées. Elle peut etre vue comme un *MITM* ou l'on ne relayerait pas les paquets entre *peripheral* et *central* mais forgerais nos propres paquets pour discuter avec le *central*. 
 
-Matos
-Fct
-Vulns abusees
-Cibles
-Implementation
-Difficultes
-Mitigations/protections
+Contrairement au *MITM* qui relaye les communications logiciellement au sein de Mirage entre deux CSR8510, cette attaque utilise un sniffer `micro:bit` pour se synchroniser puis detourner une communication.  
+La premiere phase de synchronisation a deux modes de fonctionnement suivant les besoins: le premier cible des appareils ayant l'intention de se connecter, Mirage intercepte les requetes de connexion emises sur les canaux d'annonces pour se synchroniser avec la connexion fraichement créée. Le second essaye de retrouver les parametres de connexions d'une connexion etablie afin de s'y synchroniser.  
+Dans les deux cas il est necessaire de connaitre les parametres echanges a la connexion pour se synchroniser (carte des canaux ainsi que le nombre et temps entre chaque saut), seule la methode d'obtention diffère.
 
-Utilise MicroBit et CSR4.0
-Prendre place d'un appareil dans une connexion. Se base sur ecoute passive puis brouillage
-Pas d'appairage
-Capteurs/actionneurs (lampes)
-Module mirage ble_hijack
-Pas acces a phase de connexion ni d'appairage => demande recover parametres de connexion
-Mitigé par channel hopping, protegé par appairage
+Je m'interesse a la seconde methode car je propose cette attaque sur des connexion etablies auparavant répertoriées via *sniffing*.  
+La récupération des parametres de connexion est peu reliable dû au saut de fréquence utilisé par le protocole pour éviter les interferences. La `micro:bit` change de canal frequement pour augmenter ces chances d'en trouver un utilisé mais il en va de meme pour les connexion. C'est le jeu du chat et de la souris et ce n'est qu'une question de temps et de chance avant que la carte découvre tout les canaux utilisés.
+Le second point noir de cette attaque est qu'elle est inutile si la connexion est chiffrée, vu que l'on se synchronise bien après la phase d'appairage (a moins d'etre tres chanceux). Le chiffrement est alors deja etablie et incassable, et meme si il reste possible de detourner la connexion on ne pourra rien en faire car incapable de communiquer avec l'autre appareil.
+
+L'attaque est disponible nativement dans Mirage avec le module `ble_hijack`, fortement lié au module `ble_sniff` pour se synchroniser a une connexion etablie. Ne disposant pas d'assez d'elements pour casser le chiffrement d'une connexion etablie, le détournement cible les appareils n'en utilisant pas comme des capteurs/actionneurs industriels ou domotique. 
 
 ## Tests et validation
 
-Dû aux conditions exceptionnelles imposees par le confinement, je n'avait pas de materiel BLE candide a disposition pour realiser mes attaques. J'ai donc mis en place un reseau de test predictible et factice entre deux CSR8510 a l'aide des modules imittant un *peripheral* (`ble_slave`) et son *central* (`ble_master`). Grace aux scenarios Mirage j'ai pu modifier leurs fonctionnement pour mettre en place un scenario de test reproductible qui m'a grandement aidé pour identifier et corriger les *bugs* lors des développements.
+Dû aux conditions exceptionnelles imposees par le confinement, je n'avait pas de materiel BLE candide a disposition pour realiser mes attaques. J'ai donc mis en place un reseau de test predictible et factice entre deux `CSR8510` a l'aide des modules imittant un *peripheral* (`ble_slave`) et son *central* (`ble_master`). Grace aux scenarios Mirage j'ai pu modifier leurs fonctionnement pour mettre en place un scenario de test reproductible qui m'a grandement aidé pour identifier et corriger les *bugs* lors des développements.
 Il semble cependant complexe d'automatiser le test de toutes les attaques implementées puisque incertaines. Les tests unitaires de code donnent un resultat attendu et identique en un temps donné, maintenant tester le réseau est beaucoup plus incertain car instable. Les attaques peuvent ne jamais se déclencher ou des interferences peuvent interrompre le deroulement.  
 Des tests sur le scan, la localisation, l'usurpation (*MITM*) et le détournement (*hijack*) sont tout de meme realisable manuellement via le CLI Mirage.  
 
 Le scan requiert un dongle CSR8510 emettant des annonces (voir plusieurs) et minimum une connexion etablie. Le scenario `MockSlave` (modiciation du module `ble_slave` a des fins de test) s'annonce jusqu'a ce qu'une connexion soit faite, permettant de tester le scan d'appareils alentours. Quant aux connexions etablies cela requiert une pair de `MockSlave` et `MockMaster` avec leurs CSR8510 respectifs: les scenarios de test emettent des requetes preiodiquement une fois connecté pour generer un traffic.  
-Comme évoqué precedemment, le scan des connexions etablie est incertain et peut durer indéfiniement. On pourrait mitiger ce probleme en parrallelisation plusieurs micro:bit, chacune scannant une partie des 37 canaux de données. Dans l'ideal il faudrait 37 micro:bit pour les canaux de données et 3 pour ceux d'annonces. Mirage dispose d'ailleurs du balayage pour pallier a ce probleme de parralelisation lors du scan d'appareils.
+Comme évoqué precedemment, le scan des connexions etablie est incertain et peut durer indéfiniement. On pourrait mitiger ce probleme en parrallelisant plusieurs `micro:bit`, chacune scannant une partie des 37 canaux de données. Dans l'ideal il faudrait 37 micro:bit pour les canaux de données et 3 pour ceux d'annonces. Mirage dispose d'ailleurs du balayage pour pallier a ce probleme de parralelisation lors du scan d'appareils.
 
 Les `MockSlave` sont programmés pour emettre `TxPower` dans leur annonce pour permettre la localisation, calibrage precedemment relevé a 1 metre du CSR8510 puis intégré au *GAP*. On ainsi peut mesurer l'acuité des distances en les comparants a la realité. Apres avoir fait plusieurs tests a des distance variant de moins d'un metre a 10 metres, le RSSI est fortement affecté par la distance et les objets entre l'emetteur et le recepteur. A une distance de moins d'un metre on trouve un resultat avec une precision de l'ordre de 30 centimetre et si l'on se place hors de la ligne de vue de l'emetteur, la distance calculée augmente car le RSSI diminue dû aux pertes. Un autre probleme est le seuil de sensibilité annoncé de -30 a -90dBm par le constructeur de la puce nRF51 mais d'apres mes test (basés sur le firmware Mirage) celui-ci varie entre -45dBm au plus proche jusqu'a -70dBm a la distance maximale hors de la ligne de vue (apres quoi le signal est considéré perdu). La precision des resultats aux bornes de ces valeurs est faussée car un appareil se trouvant a 10 comme a 45 centimetres aura un RSSI de -45dBm, idem pour un appareil proche de la distance maximale de reception.  
 Une amélioration intéressante serait l'ajout de points de releves pour permettre la triangulation a partir d'un seul recepteur. Il suffierait des lors de se deplacer entre chaque releve pour avoir une idée des appareils localisés dans l'espace, et non seulement une distance. Bien sur il est possible d'ajouter 2 autres RaspberryPi avec leurs micro:bit pour permettre une triangulation a partir d'un seul releve, en admettant qu'elles soient disposees correctement.
 
-L'usurpation demande 2 CSR8510 pour mener l'attaque et 2 pour la testée ainsi qu'un ordre précis dans l'execution. Un dongle CSR8510 ecoute les annonces dans l'attente du `MockSlave`. Une fois trouvé, il s'y connecte, le clone et maintient la connexion pour stopper l'emission d'annonces. Un second CSR8510 usurpe le `MockSlave` precedemment cloné et s'annonce en tant que tel dans l'attente du `MockMaster`. Des lors que le `MockMaster` se connecte a l'usurpateur, un scenario modifie les paquets échangés entre `MockSlave` et `MockMaster`, rendant vérifiable le fonctionnement de l'attaque depuis leurs CLI respectifs. 
+L'usurpation demande 2 `CSR8510` pour mener l'attaque et 2 pour la testée ainsi qu'un ordre précis dans l'execution. Un dongle CSR8510 ecoute les annonces dans l'attente du `MockSlave`. Une fois trouvé, il s'y connecte, le clone et maintient la connexion pour stopper l'emission d'annonces. Un second CSR8510 usurpe le `MockSlave` precedemment cloné et s'annonce en tant que tel dans l'attente du `MockMaster`. Des lors que le `MockMaster` se connecte a l'usurpateur, un scenario modifie les paquets échangés entre `MockSlave` et `MockMaster`, rendant vérifiable le fonctionnement de l'attaque depuis leurs CLI respectifs. 
 
-Pour conclure, le détournement de connexion ...
-hijack
-TODO
+Le détournement de connexion est testé contre une connexion factice sans appairage entre un `MockSlave` et un `MockMaster`. Avec une seule `micro:bit`, le *sniffing* de la connexion était deja tres long pour esperer tomber sur les canaux utilisés par une seule connexion. La recuperation des parametres de connexion n'a jamais reussie, meme dans un delais assez long.  
+`BTLEJack` et `Mirage` mettent d'ailleurs en garde sur la reliabilité de cette attaque et est plus considere comme experimentale qu'utile pour le *pentest*.  Il semble obligatoire de parralleliser l'analyse des canaux de donnees afin d'augmenter leur couverture pour esperer conduire l'attaque voir reduire le temps necessaire a cette phase.

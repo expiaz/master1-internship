@@ -12,10 +12,10 @@
 
     function getText(attack) {
         switch (attack) {
-            case 'scanDevice':
-                return 'scan devices'
-            case 'scanConnection':
-                return 'scan connections'
+            case 'scan':
+                return 'devices scan'
+            case 'sniff':
+                return 'connections sniffing'
             default:
                 return attack
         }
@@ -104,8 +104,8 @@
             <main class="container">
                 <div class="content">
                     <div class="controls">
-                        <Control attack="scanDevice" />
-                        <Control attack="scanConnection" />
+                        <Control attack="scan" />
+                        <Control attack="sniff" />
                     </div>
                     <div class="radar" oncreate=${onRadarCreation}>
                         ${positions}
@@ -160,8 +160,8 @@
                 return {
                     onclick: () => {
                         actions.stopAttack({ attack, target })
-                        // if (attack == 'scanConnection')
-                        //    clearTimeout(fakeScanConnTimer)
+                        // if (attack == 'sniff')
+                        //    clearTimeout(fakeSniffConnTimer)
                     },
                     'class': 'control cancel'
                 }
@@ -170,8 +170,8 @@
                 return {
                     onclick: () => {
                         actions.startAttack({ attack, target })
-                        // if (attack == 'scanConnection')
-                        //    fakeScanConnTimer = setTimeout(fakeScanConn, 1000)
+                        // if (attack == 'sniff')
+                        //    fakeSniffConnTimer = setTimeout(fakeSniffConn, 1000)
                     },
                     'class': 'control start'
                 }
@@ -256,7 +256,7 @@
         return html`
             <div class="legend" style=${{ zIndex: devices.length + 1 }}>
             ${elligibleDevices.map(({ color, distance }) => html`
-                <div>
+                <div key=${color}>
                     <div class="color" style=${{ background: color }}></div>
                     <div class="distance">${distance}m</div>
                 </div>
@@ -276,10 +276,12 @@
     const main = app(state, actions, view, document.body)
 
     /*
-    let fakeScanConnTimer
+    test purpose
+
+    let fakeSniffConnTimer
     let fakeHits = 0
     let fakeChannels = new Set()
-    const fakeScanConn = () => {
+    const fakeSniffConn = () => {
         fakeChannels.add(Math.round(Math.random() * 36))
         fakeHits++
         main.updateConnections([{
@@ -289,8 +291,8 @@
             channels: [...fakeChannels]
         }])
 
-        //clearTimeout(fakeScanConnTimer)
-        fakeScanConnTimer = setTimeout(fakeScanConn, Math.round(Math.random() * 5) * 1000)
+        //clearTimeout(fakeSniffConnTimer)
+        fakeSniffConnTimer = setTimeout(fakeSniffConn, Math.round(Math.random() * 5) * 1000)
     }
     */
 
