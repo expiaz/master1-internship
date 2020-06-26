@@ -156,3 +156,11 @@ Relecture rapport
 
 # Semaine 11 - 22/06
 
+Test et documentation des attaques GUI/CLI
+Redaction de la partie PoC et tests du rapport
+Relecture et correction du rapport
+
+TODO:
+Rendre le rapport
+Demenager Lorient
+Être en vacances

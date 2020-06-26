@@ -18,4 +18,3 @@ services:
         - ./test:/poc/test
         - ./libs:/poc/libs
         - ./server:/poc/server
-        - ./shared:/poc/shared
