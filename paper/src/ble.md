@@ -140,6 +140,6 @@ Le *GATT* définit égalemet des services standardisés appelés primaire et sec
 
 ![Client et serveur GATT[@ble-gatt-arch]](img/ble-gatt-arch.png){#fig:ble-gatt-arch width=90%}
 
-## Évolution
+### Évolution
 
 Depuis sa première itération en 2010 dans la version `4.0` des spécifications Bluetooth le BLE a évolué pour intégrer des mesures de sécurité avec l'ajout des connexions sécurisées *LE* en `4.2` puis la diversification des topologies avec l'introduction du *mesh* pour les réseaux de capteurs en `5.0` et dernièrement l'amélioration de la localisation intérieur (*Indoor Positionning System*) pour une précision de l'ordre du centimètre grâce aux systèmes angle d'arrivée et de départ (*AOA/AOD*).
