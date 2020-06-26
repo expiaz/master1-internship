@@ -20,7 +20,7 @@ Le *scanning* consiste à répertorier des appareils BLE à proximité, on peut 
 La pile protocolaire *BlueZ* permet le *scan* des *advertisements* (annonces) tandis que plusieurs outils precedements evoques comme `smartRF` ou `nRFSniffer` suffisent pour repérer une communication.
 
 ### Spoofing
-C'est l'une des étape du *Man-In-The-Middle* qui permet d'usurper un *peripheral* `BLE`. Après identification de la victime (via annonces ou adresse *BD*), l'attaquant la clone en s'y connectant et extractant son profile *GATT*. L'attaquant peut rester connecté pour garder la victime silencieuse (un *peripheral* connecté n'émettant pas d'annonces) puis, via un *dongle HCI*, s'annonce comme étant l'appareil précédemment cloné.  
+C'est l'une des étape du *Man-In-The-Middle* qui permet d'usurper un *peripheral* `BLE`. Après identification de la victime (via annonces ou adresse *BD*), l'attaquant la clone en s'y connectant et extractant son profil *GATT*. L'attaquant peut rester connecté pour garder la victime silencieuse (un *peripheral* connecté n'émettant pas d'annonces) puis, via un *dongle HCI*, s'annonce comme étant l'appareil précédemment cloné.  
 Cette attaque est réalisable en utilisant simplement un *dongle HCI* et l'utilitaire *BLueZ*. Les librairies et *frameworks* d'attaque discutés plus auparavant (*GATTAcker*, *BTLEJack*) intègrent également ces mécanisme.
 
 ### Sniffing
